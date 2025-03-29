@@ -10,14 +10,18 @@ import SwiftUI
 struct Game: View {
     @StateObject private var piecesManager = PiecesManager()
     
+    private var couldMovePositions: [BoardIndex] {
+        piecesManager.selectedPiecePossibleMovements.map { $0.to }
+    }
+    
     var body: some View {
         VStack {
             Text("selected: " + (piecesManager.selectedPiece?.pieceCommonName ?? "not selected"))
             ZStack {
-                Board(piecesManager: piecesManager)
-                PiecesLayer(pieces: $piecesManager.pieces) { piece, position in
-                    
+                Board() { _ in 
+                    piecesManager.selectedPieceIndex = nil
                 }
+                PiecesLayer(piecesManager: piecesManager)
             }
         }
     }

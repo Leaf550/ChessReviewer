@@ -11,6 +11,8 @@
 		B706040F2D970A1700C0BE2E /* PiecesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706040E2D970A1700C0BE2E /* PiecesManager.swift */; };
 		B70604112D97E17900C0BE2E /* RookMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604102D97E17900C0BE2E /* RookMovementRule.swift */; };
 		B70604132D97FAC900C0BE2E /* BishopMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */; };
+		B70604152D98223800C0BE2E /* MoveIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604142D98223800C0BE2E /* MoveIndicator.swift */; };
+		B70604172D98231200C0BE2E /* PieceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604162D98231200C0BE2E /* PieceCell.swift */; };
 		B78750932D95B143002316D3 /* ChessReviewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750922D95B143002316D3 /* ChessReviewerApp.swift */; };
 		B78750952D95B143002316D3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750942D95B143002316D3 /* ContentView.swift */; };
 		B78750972D95B14A002316D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B78750962D95B14A002316D3 /* Assets.xcassets */; };
@@ -31,6 +33,8 @@
 		B706040E2D970A1700C0BE2E /* PiecesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesManager.swift; sourceTree = "<group>"; };
 		B70604102D97E17900C0BE2E /* RookMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RookMovementRule.swift; sourceTree = "<group>"; };
 		B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BishopMovementRule.swift; sourceTree = "<group>"; };
+		B70604142D98223800C0BE2E /* MoveIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveIndicator.swift; sourceTree = "<group>"; };
+		B70604162D98231200C0BE2E /* PieceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceCell.swift; sourceTree = "<group>"; };
 		B787508F2D95B143002316D3 /* ChessReviewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChessReviewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B78750922D95B143002316D3 /* ChessReviewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessReviewerApp.swift; sourceTree = "<group>"; };
 		B78750942D95B143002316D3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -139,10 +143,12 @@
 			isa = PBXGroup;
 			children = (
 				B706040B2D96E75F00C0BE2E /* MovementRules */,
+				B70604162D98231200C0BE2E /* PieceCell.swift */,
 				B78750B02D969239002316D3 /* Piece.swift */,
 				B78750B22D969545002316D3 /* PieceViewItem.swift */,
 				B78750B72D96A780002316D3 /* PiecesLayer.swift */,
 				B706040E2D970A1700C0BE2E /* PiecesManager.swift */,
+				B70604142D98223800C0BE2E /* MoveIndicator.swift */,
 			);
 			path = Piece;
 			sourceTree = "<group>";
@@ -234,7 +240,9 @@
 			files = (
 				B70604132D97FAC900C0BE2E /* BishopMovementRule.swift in Sources */,
 				B78750B82D96A780002316D3 /* PiecesLayer.swift in Sources */,
+				B70604152D98223800C0BE2E /* MoveIndicator.swift in Sources */,
 				B78750B12D969239002316D3 /* Piece.swift in Sources */,
+				B70604172D98231200C0BE2E /* PieceCell.swift in Sources */,
 				B78750B62D969B39002316D3 /* Game.swift in Sources */,
 				B78750952D95B143002316D3 /* ContentView.swift in Sources */,
 				B78750A52D95B1F5002316D3 /* BoardCell.swift in Sources */,

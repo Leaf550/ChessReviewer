@@ -16,14 +16,10 @@ struct BoardCell: View {
     
     var onBoardCellSelected: ((BoardIndex) -> Void)?
     
-    var couldTouch: Bool = false
-    
     var body: some View {
         Button {
             print("点击了棋盘，位置：\(cellIndex.toPositionStr())")
-            if couldTouch {
-                onBoardCellSelected?(cellIndex)
-            }
+            onBoardCellSelected?(cellIndex)
         } label: {
             ZStack {
                 Rectangle()
@@ -53,13 +49,6 @@ struct BoardCell: View {
                                 .font(.footnote)
                         }
                     }
-                }
-                
-                if couldTouch {
-                    Circle()
-                        .foregroundColor(.white)
-                        .frame(width: 12)
-                        .opacity(0.6)
                 }
             }
         }

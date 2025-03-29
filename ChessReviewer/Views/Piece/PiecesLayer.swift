@@ -8,74 +8,60 @@
 import SwiftUI
 
 struct PiecesLayer: View {
-    @Binding var pieces: [[PieceViewItem]]
-    var onPieceSelected: (PieceViewItem, BoardIndex) -> Void = { _, _ in }
+    @ObservedObject var piecesManager: PiecesManager
     
-    var isPiecesLegal: Bool {
-        pieces.count == 8 && pieces.allSatisfy({ $0.count <= 8 })
+    private var isPiecesLegal: Bool {
+        piecesManager.pieces.count == 8 && piecesManager.pieces.allSatisfy({ $0.count <= 8 })
+    }
+    
+    private func movePiece(from originIndex: BoardIndex, to targetIndex: BoardIndex) {
+        guard let targetMovement = (piecesManager.selectedPiecePossibleMovements.first {
+            $0.to == targetIndex
+        }) else { return }
+        piecesManager.movePiece(from: originIndex, to: targetMovement.to)
     }
     
     var body: some View {
-        if !isPiecesLegal {
-            VStack {
-                Text("Pieces Error")
-            }
+        if isPiecesLegal {
+            piecesGrid()
+                .aspectRatio(1, contentMode: .fit)
+                .padding(5)
         } else {
-            GeometryReader { geometry in
-                VStack(spacing: 0) {
-                    ForEach(0..<8) { yIndex in
-                        HStack(spacing: 0) {
-                            ForEach(0..<8) { xIndex in
-                                Group {
-                                    switch pieces[yIndex][xIndex] {
-                                        case .none:
-                                            Color.clear
-                                                .contentShape(Rectangle())
-                                                .allowsHitTesting(false)
-                                        default:
-                                            Piece(
-                                                model: pieces[yIndex][xIndex],
-                                                position: BoardIndex(x: xIndex, y: 8 - yIndex - 1),
-                                                onPieceSelected: onPieceSelected
-                                            )
-                                    }
-                                }
-                                .frame(
-                                    width: geometry.size.width / 8.0,
-                                    height: geometry.size.height / 8.0
-                                )
-                            }
-                        }
+            errorView
+        }
+    }
+        
+    private func piecesGrid() -> some View {
+        VStack(spacing: 0) {
+            ForEach(0 ..< 8) { y in
+                HStack(spacing: 0) {
+                    ForEach(0 ..< 8) { x in
+                        PieceCell(
+                            manager: piecesManager,
+                            position: BoardIndex(x: x, y: 7 - y)
+                        )
                     }
                 }
             }
-            .padding(5)
-            .aspectRatio(1, contentMode: .fit)
         }
+    }
+    
+    private var errorView: some View {
+        VStack {
+            Text("棋子布局异常")
+                .font(.headline)
+            Text("请检查棋子数组维度")
+                .font(.subheadline)
+        }
+        .foregroundColor(.red)
     }
 }
 
 struct PiecesLayer_Previews: PreviewProvider {
     static var previews: some View {
-        let pieces = [
-            [
-                .r(.black), .n(.black), .b(.black), .q(.black),
-                .k(.black), .b(.black), .n(.black), .r(.black)
-            ],
-            [PieceViewItem](repeating: .p(.black), count: 8),
-            [PieceViewItem](repeating: .none, count: 8),
-            [PieceViewItem](repeating: .none, count: 8),
-            [PieceViewItem](repeating: .none, count: 8),
-            [PieceViewItem](repeating: .none, count: 8),
-            [PieceViewItem](repeating: .p(.white), count: 8),
-            [
-                .r(.white), .n(.white), .b(.white), .q(.white),
-                .k(.white), .b(.white), .n(.white), .r(.white)
-            ],
-        ]
         ZStack {
-            Board(piecesManager: PiecesManager())
-            PiecesLayer(pieces: .constant(pieces))
+            Board()
+            PiecesLayer(piecesManager: PiecesManager())
         }
     }
 }

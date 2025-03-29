@@ -24,14 +24,14 @@ class PiecesManager: ObservableObject {
     }
     
     @Published var pieces: [[PieceViewItem]] = [
-        [PieceViewItem](repeating: .none, count: 8),
+        [PieceViewItem](repeating: .p(.black), count: 8),
         [PieceViewItem](repeating: .none, count: 8),
         [PieceViewItem](repeating: .none, count: 8),
         [PieceViewItem](repeating: .none, count: 8),
         [.none, .none, .none, .none, .b(.white), .none, .none, .none],
         [PieceViewItem](repeating: .none, count: 8),
         [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .none, count: 8),
+        [PieceViewItem](repeating: .p(.black), count: 8),
     ]
     
     func getPiece(at index: BoardIndex) -> PieceViewItem {
@@ -40,5 +40,17 @@ class PiecesManager: ObservableObject {
             return .none
         }
         return pieces[7 - index.yIndex][index.xIndex]
+    }
+    
+    func movePiece(from originIndex: BoardIndex, to targetIndex: BoardIndex) {
+        guard (0...7).contains(originIndex.xIndex),
+              (0...7).contains(originIndex.yIndex),
+              (0...7).contains(targetIndex.xIndex),
+              (0...7).contains(targetIndex.yIndex) else {
+            return
+        }
+        let originPiece = getPiece(at: originIndex)
+        pieces[7 - originIndex.yIndex][originIndex.xIndex] = .none
+        pieces[7 - targetIndex.yIndex][targetIndex.xIndex] = originPiece
     }
 }

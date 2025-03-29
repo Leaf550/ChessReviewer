@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct Board: View {
-    @ObservedObject var piecesManager: PiecesManager
     var onBoardCellSelected: ((BoardIndex) -> Void)?
     
     var body: some View {
@@ -18,13 +17,9 @@ struct Board: View {
                     HStack(spacing: 0) {
                         ForEach(0..<8) { xIndex in
                             let currentIndex = BoardIndex(x: xIndex, y: yIndex)
-                            let currentCouldTouch = piecesManager.selectedPiecePossibleMovements
-                                .map { $0.to }
-                                .contains(currentIndex)
                             BoardCell(
                                 cellIndex: currentIndex,
-                                onBoardCellSelected: onBoardCellSelected,
-                                couldTouch: currentCouldTouch
+                                onBoardCellSelected: onBoardCellSelected
                             ).frame(
                                 width: geometry.size.width / 8.0,
                                 height: geometry.size.height / 8.0
@@ -42,6 +37,6 @@ struct Board: View {
 
 struct Board_Previews: PreviewProvider {
     static var previews: some View {
-        Board(piecesManager: PiecesManager())
+        Board()
     }
 }

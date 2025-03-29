@@ -8,26 +8,41 @@
 import SwiftUI
 
 struct Piece: View {
-    let pieceViewModel: PieceViewItem
-    var position: BoardIndex
-    var onPieceSelected: ((PieceViewItem, BoardIndex) -> Void)?
+    @ObservedObject var piecesManager: PiecesManager
+    
+    let position: BoardIndex
+    var pieceViewItem: PieceViewItem {
+        piecesManager.getPiece(at: position)
+    }
     
     init(
-        model pieceViewModel: PieceViewItem,
         position: BoardIndex,
-        onPieceSelected: @escaping (PieceViewItem, BoardIndex) -> Void = { _, _ in }
+        piecesManager: PiecesManager
     ) {
-        self.pieceViewModel = pieceViewModel
         self.position = position
-        self.onPieceSelected = onPieceSelected
+        self.piecesManager = piecesManager
     }
     
     var body: some View {
         Button {
-            onPieceSelected?(pieceViewModel, position)
+            piecesManager.selectedPieceIndex = position
+            print("选中了棋子：\(pieceViewItem.pieceCommonName)，位置：\(position.toPositionStr())")
+            let piece = piecesManager.getPiece(at: position)
+            if piece != .none {
+                let moves = pieceViewItem.movementRule.possibleMoves(
+                    at: position,
+                    in: piecesManager
+                )
+                print("可移动位置：", moves.map {
+                    $0.to.toPositionStr()
+                    + ($0.take != nil ? " takes \($0.take?.pieceCommonName ?? "")" : "")
+                    + ($0.promotion ? "，升变" : "")
+                })
+            }
+            print("------------------------------------------------")
         } label: {
             ZStack {
-                Text(pieceViewModel.pieceNotation)
+                Text(pieceViewItem.pieceNotation)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .foregroundColor(.white)
                     .font(.title2)
@@ -42,7 +57,7 @@ struct Material_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             BoardCell(cellIndex: BoardIndex.getOriginIndex())
-            Piece(model: .r(.white), position: BoardIndex.getOriginIndex())
+            Piece(position: BoardIndex.getOriginIndex(), piecesManager: PiecesManager())
         }
         .frame(width: 50, height: 50)
     }
