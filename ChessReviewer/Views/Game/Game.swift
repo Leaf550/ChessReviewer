@@ -22,7 +22,7 @@ struct Game: View {
                     piecesManager.selectedPieceIndex = nil
                 }
                 PiecesLayer(piecesManager: piecesManager)
-            }
+            }.padding()
         }
     }
 }
