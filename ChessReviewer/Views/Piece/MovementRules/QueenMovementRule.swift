@@ -1,5 +1,5 @@
 //
-//  BishopMovementRule.swift
+//  QueenMovementRule.swift
 //  ChessReviewer
 //
 //  Created by 方昱恒 on 2025/3/29.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BishopMovementRule: MovementRule {
+struct QueenMovementRule: MovementRule {
     let side: PieceViewItem.PieceSide
     private let slideMovementRule: SlideMovementRule
     
@@ -15,7 +15,10 @@ struct BishopMovementRule: MovementRule {
         self.side = side
         slideMovementRule = SlideMovementRule(
             side: side,
-            directions: [(-1, 1), (1, 1), (-1, -1), (1, -1)],
+            directions: [
+                (0, 1), (0, -1), (-1, 0), (1, 0),
+                (-1, 1), (1, 1), (-1, -1), (1, -1)
+            ],
             maxDistance: 7
         )
     }

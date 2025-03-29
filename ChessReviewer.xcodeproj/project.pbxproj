@@ -13,6 +13,11 @@
 		B70604132D97FAC900C0BE2E /* BishopMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */; };
 		B70604152D98223800C0BE2E /* MoveIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604142D98223800C0BE2E /* MoveIndicator.swift */; };
 		B70604172D98231200C0BE2E /* PieceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604162D98231200C0BE2E /* PieceCell.swift */; };
+		B70604192D982C9700C0BE2E /* SlideMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604182D982C9700C0BE2E /* SlideMovementRule.swift */; };
+		B706041B2D982F1200C0BE2E /* QueenMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706041A2D982F1200C0BE2E /* QueenMovementRule.swift */; };
+		B706041D2D982F6100C0BE2E /* KnightMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706041C2D982F6100C0BE2E /* KnightMovementRule.swift */; };
+		B706041F2D98314300C0BE2E /* OffsetMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706041E2D98314300C0BE2E /* OffsetMovementRule.swift */; };
+		B70604212D9831DF00C0BE2E /* KingMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604202D9831DF00C0BE2E /* KingMovementRule.swift */; };
 		B78750932D95B143002316D3 /* ChessReviewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750922D95B143002316D3 /* ChessReviewerApp.swift */; };
 		B78750952D95B143002316D3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750942D95B143002316D3 /* ContentView.swift */; };
 		B78750972D95B14A002316D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B78750962D95B14A002316D3 /* Assets.xcassets */; };
@@ -35,6 +40,11 @@
 		B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BishopMovementRule.swift; sourceTree = "<group>"; };
 		B70604142D98223800C0BE2E /* MoveIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveIndicator.swift; sourceTree = "<group>"; };
 		B70604162D98231200C0BE2E /* PieceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceCell.swift; sourceTree = "<group>"; };
+		B70604182D982C9700C0BE2E /* SlideMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideMovementRule.swift; sourceTree = "<group>"; };
+		B706041A2D982F1200C0BE2E /* QueenMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueenMovementRule.swift; sourceTree = "<group>"; };
+		B706041C2D982F6100C0BE2E /* KnightMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnightMovementRule.swift; sourceTree = "<group>"; };
+		B706041E2D98314300C0BE2E /* OffsetMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetMovementRule.swift; sourceTree = "<group>"; };
+		B70604202D9831DF00C0BE2E /* KingMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KingMovementRule.swift; sourceTree = "<group>"; };
 		B787508F2D95B143002316D3 /* ChessReviewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChessReviewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B78750922D95B143002316D3 /* ChessReviewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessReviewerApp.swift; sourceTree = "<group>"; };
 		B78750942D95B143002316D3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -69,6 +79,11 @@
 				B706040C2D96E77800C0BE2E /* PawnMovementRule.swift */,
 				B70604102D97E17900C0BE2E /* RookMovementRule.swift */,
 				B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */,
+				B70604182D982C9700C0BE2E /* SlideMovementRule.swift */,
+				B706041A2D982F1200C0BE2E /* QueenMovementRule.swift */,
+				B706041C2D982F6100C0BE2E /* KnightMovementRule.swift */,
+				B706041E2D98314300C0BE2E /* OffsetMovementRule.swift */,
+				B70604202D9831DF00C0BE2E /* KingMovementRule.swift */,
 			);
 			path = MovementRules;
 			sourceTree = "<group>";
@@ -242,16 +257,21 @@
 				B78750B82D96A780002316D3 /* PiecesLayer.swift in Sources */,
 				B70604152D98223800C0BE2E /* MoveIndicator.swift in Sources */,
 				B78750B12D969239002316D3 /* Piece.swift in Sources */,
+				B70604192D982C9700C0BE2E /* SlideMovementRule.swift in Sources */,
 				B70604172D98231200C0BE2E /* PieceCell.swift in Sources */,
+				B706041B2D982F1200C0BE2E /* QueenMovementRule.swift in Sources */,
 				B78750B62D969B39002316D3 /* Game.swift in Sources */,
 				B78750952D95B143002316D3 /* ContentView.swift in Sources */,
 				B78750A52D95B1F5002316D3 /* BoardCell.swift in Sources */,
 				B78750A92D966C43002316D3 /* Board.swift in Sources */,
+				B706041D2D982F6100C0BE2E /* KnightMovementRule.swift in Sources */,
 				B706040F2D970A1700C0BE2E /* PiecesManager.swift in Sources */,
 				B706040D2D96E77800C0BE2E /* PawnMovementRule.swift in Sources */,
 				B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */,
+				B70604212D9831DF00C0BE2E /* KingMovementRule.swift in Sources */,
 				B78750932D95B143002316D3 /* ChessReviewerApp.swift in Sources */,
 				B78750A72D95B4A2002316D3 /* BoardIndex.swift in Sources */,
+				B706041F2D98314300C0BE2E /* OffsetMovementRule.swift in Sources */,
 				B78750B32D969545002316D3 /* PieceViewItem.swift in Sources */,
 				B78750AE2D968B6B002316D3 /* Color.swift in Sources */,
 				B70604112D97E17900C0BE2E /* RookMovementRule.swift in Sources */,

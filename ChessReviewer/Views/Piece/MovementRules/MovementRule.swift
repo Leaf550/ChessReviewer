@@ -66,7 +66,7 @@ extension MovementRule {
                     let targetX = position.xIndex + offset.0
                     let targetY = position.yIndex + offset.1
                     if !((0...7).contains(targetX) && (0...7).contains(targetY)) {
-                        break
+                        continue
                     }
                     
                     let target = BoardIndex(x: targetX, y: targetY)
@@ -92,10 +92,10 @@ extension PieceViewItem {
         switch self {
             case .p(let side): return PawnMovementRule(side: side)
             case .r(let side): return RookMovementRule(side: side)
-            case .n(let side): return EmptyMovement(side: side)
+            case .n(let side): return KnightMovementRule(side: side)
             case .b(let side): return BishopMovementRule(side: side)
-            case .q(let side): return EmptyMovement(side: side)
-            case .k(let side): return EmptyMovement(side: side)
+            case .q(let side): return QueenMovementRule(side: side)
+            case .k(let side): return KingMovementRule(side: side)
             case .none: return EmptyMovement(side: .white)
         }
     }

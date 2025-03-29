@@ -24,14 +24,20 @@ class PiecesManager: ObservableObject {
     }
     
     @Published var pieces: [[PieceViewItem]] = [
+        [
+            .r(.black), .n(.black), .b(.black), .q(.black),
+            .k(.black), .b(.black), .n(.black), .r(.black)
+        ],
         [PieceViewItem](repeating: .p(.black), count: 8),
         [PieceViewItem](repeating: .none, count: 8),
         [PieceViewItem](repeating: .none, count: 8),
         [PieceViewItem](repeating: .none, count: 8),
-        [.none, .none, .none, .none, .b(.white), .none, .none, .none],
         [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .p(.black), count: 8),
+        [PieceViewItem](repeating: .p(.white), count: 8),
+        [
+            .r(.white), .n(.white), .b(.white), .q(.white),
+            .k(.white), .b(.white), .n(.white), .r(.white)
+        ],
     ]
     
     func getPiece(at index: BoardIndex) -> PieceViewItem {
