@@ -30,6 +30,7 @@
 		B78750B32D969545002316D3 /* PieceViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750B22D969545002316D3 /* PieceViewItem.swift */; };
 		B78750B62D969B39002316D3 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750B52D969B39002316D3 /* Game.swift */; };
 		B78750B82D96A780002316D3 /* PiecesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750B72D96A780002316D3 /* PiecesLayer.swift */; };
+		B7A174B92D992A64009566E4 /* MoveRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174B82D992A64009566E4 /* MoveRecorder.swift */; };
 		B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BC8C602D96E5FC0071E216 /* MovementRule.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +59,7 @@
 		B78750B22D969545002316D3 /* PieceViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceViewItem.swift; sourceTree = "<group>"; };
 		B78750B52D969B39002316D3 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		B78750B72D96A780002316D3 /* PiecesLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesLayer.swift; sourceTree = "<group>"; };
+		B7A174B82D992A64009566E4 /* MoveRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveRecorder.swift; sourceTree = "<group>"; };
 		B7BC8C602D96E5FC0071E216 /* MovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementRule.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -162,7 +164,6 @@
 				B78750B02D969239002316D3 /* Piece.swift */,
 				B78750B22D969545002316D3 /* PieceViewItem.swift */,
 				B78750B72D96A780002316D3 /* PiecesLayer.swift */,
-				B706040E2D970A1700C0BE2E /* PiecesManager.swift */,
 				B70604142D98223800C0BE2E /* MoveIndicator.swift */,
 			);
 			path = Piece;
@@ -171,7 +172,9 @@
 		B78750B42D969B29002316D3 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				B706040E2D970A1700C0BE2E /* PiecesManager.swift */,
 				B78750B52D969B39002316D3 /* Game.swift */,
+				B7A174B82D992A64009566E4 /* MoveRecorder.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				B706041D2D982F6100C0BE2E /* KnightMovementRule.swift in Sources */,
 				B706040F2D970A1700C0BE2E /* PiecesManager.swift in Sources */,
 				B706040D2D96E77800C0BE2E /* PawnMovementRule.swift in Sources */,
+				B7A174B92D992A64009566E4 /* MoveRecorder.swift in Sources */,
 				B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */,
 				B70604212D9831DF00C0BE2E /* KingMovementRule.swift in Sources */,
 				B78750932D95B143002316D3 /* ChessReviewerApp.swift in Sources */,

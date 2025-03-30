@@ -17,6 +17,7 @@ struct Game: View {
     var body: some View {
         VStack {
             Text("selected: " + (piecesManager.selectedPiece?.pieceCommonName ?? "not selected"))
+            Text(piecesManager.moveRecorder.mainBranchMovesString())
             ZStack {
                 Board() { _ in 
                     piecesManager.selectedPieceIndex = nil

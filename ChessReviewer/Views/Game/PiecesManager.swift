@@ -8,6 +8,13 @@
 import Foundation
 
 class PiecesManager: ObservableObject {
+    @Published var moveRecorder: MoveRecorder = MoveRecorder()
+    var currentMove: Move?
+
+    var currentSide = PieceViewItem.PieceSide.white
+    var currentTurn = 1
+    var currentRound = 1
+    
     @Published var selectedPieceIndex: BoardIndex?
     
     var selectedPiece: PieceViewItem? {
@@ -58,5 +65,29 @@ class PiecesManager: ObservableObject {
         let originPiece = getPiece(at: originIndex)
         pieces[7 - originIndex.yIndex][originIndex.xIndex] = .none
         pieces[7 - targetIndex.yIndex][targetIndex.xIndex] = originPiece
+        
+        let newMove = Move(
+            previous: currentMove,
+            turn: currentTurn,
+            round: currentRound,
+            from: originIndex,
+            to: targetIndex,
+            side: currentSide,
+            currentPiecesLayout: pieces
+        )
+        
+        if currentMove == nil {
+            currentMove = newMove
+            moveRecorder.timeline = currentMove
+        } else {
+            currentMove?.next = newMove
+            currentMove = currentMove?.next
+        }
+        
+        if currentSide == PieceViewItem.PieceSide.black {
+            currentRound += 1
+        }
+        currentSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
+        currentTurn += 1
     }
 }
