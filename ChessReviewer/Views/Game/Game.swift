@@ -10,21 +10,37 @@ import SwiftUI
 struct Game: View {
     @StateObject private var piecesManager = PiecesManager()
     
-    private var couldMovePositions: [BoardIndex] {
-        piecesManager.selectedPiecePossibleMovements.map { $0.to }
-    }
-    
     var body: some View {
         VStack {
-            Text("selected: " + (piecesManager.selectedPiece?.pieceCommonName ?? "not selected"))
-            Text(piecesManager.moveRecorder.mainBranchMovesString())
+            Text(getCheckmateTitle())
+                .frame(height: 20)
+            ScrollView(.horizontal, showsIndicators: false) {
+                Text(getMovesString())
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            .frame(height: 20)
+            .padding([.leading, .trailing], 20)
             ZStack {
                 Board() { _ in 
                     piecesManager.selectedPieceIndex = nil
                 }
                 PiecesLayer(piecesManager: piecesManager)
-            }.padding()
+            }
+            .padding()
         }
+    }
+    
+    private func getCheckmateTitle() -> String {
+        if let sideInCheckmate = piecesManager.sideInCheckmate {
+            return "Chackmate to \(sideInCheckmate == .white ? "white" : "black")!"
+        }
+        return ""
+    }
+    
+    private func getMovesString() -> String {
+        piecesManager.moveRecorder.mainBranchRoundsArray().enumerated().map { (index, move) in
+            "\(index + 1): \(move)"
+        }.joined(separator: " | ")
     }
 }
 

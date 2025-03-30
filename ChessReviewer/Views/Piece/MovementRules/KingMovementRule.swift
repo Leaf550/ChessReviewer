@@ -9,23 +9,24 @@ import Foundation
 
 struct KingMovementRule: MovementRule {
     var side: PieceViewItem.PieceSide
-    private let offsetMovementRule: OffsetMovementRule
+    private let offsetMovementRule: GenericMovementRule
     
     init(side: PieceViewItem.PieceSide) {
         self.side = side
-        offsetMovementRule = OffsetMovementRule(
+        offsetMovementRule = GenericMovementRule(
             side: side,
-            offsets: [
+            moveMethod: .offsets([
                 (-1, 1), (0, 1), (1, 1), (-1, 0),
                 (1, 0), (-1, -1), (0, -1), (1, -1)
-            ]
+            ])
         )
     }
     
     func possibleMoves(
         at position: BoardIndex,
-        in pieceManager: PiecesManager
+        in piecesLayer: [[PieceViewItem]],
+        threateningCheck: Bool
     ) -> [PossibbleMovement] {
-        return offsetMovementRule.possibleMoves(at: position, in: pieceManager)
+        return offsetMovementRule.possibleMoves(at: position, in: piecesLayer, threateningCheck: threateningCheck)
     }
 }

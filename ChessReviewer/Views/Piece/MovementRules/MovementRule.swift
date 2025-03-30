@@ -10,7 +10,6 @@ import Foundation
 struct PossibbleMovement {
     var to: BoardIndex
     var take: PieceViewItem? = nil
-    var check: Bool = false
     var promotion: Bool = false
 }
 
@@ -19,7 +18,8 @@ protocol MovementRule {
     
     func possibleMoves(
         at position: BoardIndex,
-        in pieceManager: PiecesManager
+        in piecesLayer: [[PieceViewItem]],
+        threateningCheck: Bool
     ) -> [PossibbleMovement]
 }
 
@@ -30,12 +30,23 @@ enum MoveMethod {
     case offsets([(Int, Int)])
 }
 
-struct MovePossibleCheckResult {
-    var couldMove: Bool
-    var take: Bool
+enum MovePossibleCheckResult {
+    case blocked
+    case leadsToCheck
+    case blankSquare
+    case take
+    case unknown
 }
 
 extension MovementRule {
+    func getPiece(in piecesLayer: [[PieceViewItem]], at possition: BoardIndex) -> PieceViewItem {
+        guard (0...7).contains(possition.xIndex),
+              (0...7).contains(possition.yIndex) else {
+            return .none
+        }
+        return piecesLayer[7 - possition.yIndex][possition.xIndex]
+    }
+    
     func iteratePossibleMoves(
         at position: BoardIndex,
         moveMethod: MoveMethod,
@@ -53,10 +64,16 @@ extension MovementRule {
                         
                         let target = BoardIndex(x: targetX, y: targetY)
                         let checkResult = checkPossible(target)
-                        if checkResult.take {
+                        
+                        if checkResult == .blocked {
                             break
-                        }
-                        if !checkResult.couldMove {
+                        } else if checkResult == .leadsToCheck {
+                            continue
+                        } else if checkResult == .blankSquare {
+                            continue
+                        } else if checkResult == .take {
+                            break
+                        } else {
                             break
                         }
                     }
@@ -81,7 +98,8 @@ struct EmptyMovement: MovementRule {
     
     func possibleMoves(
         at position: BoardIndex,
-        in pieceManager: PiecesManager
+        in piecesLayer: [[PieceViewItem]],
+        threateningCheck: Bool
     ) -> [PossibbleMovement] {
         return []
     }

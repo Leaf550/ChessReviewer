@@ -21,6 +21,12 @@ struct PieceCell: View {
     
     var body: some View {
         ZStack {
+            if (isInCheckKing()) {
+                Circle()
+                .foregroundStyle(Color(hex: "#ff3333"))
+                    .frame(width:  35)
+                    .blur(radius: 5)
+            }
             switch pieceItem {
                 case .none:
                     Color.clear
@@ -38,14 +44,21 @@ struct PieceCell: View {
             }
         }
     }
+    
+    private func isInCheckKing() -> Bool {
+        if let sideInCkeck = manager.sideInCheck {
+            return pieceItem == .k(sideInCkeck)
+        }
+        return false
+    }
 }
 
 struct PieceCell_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            PieceCell(manager: PiecesManager(), position: BoardIndex.getOriginIndex())
+            PieceCell(manager: PiecesManager(), position: BoardIndex(x: 4, y: 0))
         }
-        .frame(width: 200, height: 200)
+        .frame(width: 50, height: 50)
         .background(.blue)
     }
 }

@@ -9,21 +9,21 @@ import Foundation
 
 struct RookMovementRule: MovementRule {
     let side: PieceViewItem.PieceSide
-    private let slideMovementRule: SlideMovementRule
+    private let slideMovementRule: GenericMovementRule
     
     init(side: PieceViewItem.PieceSide) {
         self.side = side
-        slideMovementRule = SlideMovementRule(
+        slideMovementRule = GenericMovementRule(
             side: side,
-            directions: [(0, 1), (0, -1), (-1, 0), (1, 0)],
-            maxDistance: 7
+            moveMethod: .directionsAndDistance([(0, 1), (0, -1), (-1, 0), (1, 0)], 7)
         )
     }
     
     func possibleMoves(
         at position: BoardIndex,
-        in pieceManager: PiecesManager
+        in piecesLayer: [[PieceViewItem]],
+        threateningCheck: Bool
     ) -> [PossibbleMovement] {
-        slideMovementRule.possibleMoves(at: position, in: pieceManager)
+        slideMovementRule.possibleMoves(at: position, in: piecesLayer, threateningCheck: threateningCheck)
     }
 }

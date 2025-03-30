@@ -12,7 +12,8 @@ struct PawnMovementRule: MovementRule {
     
     func possibleMoves(
         at position: BoardIndex,
-        in pieceManager: PiecesManager
+        in piecesLayer: [[PieceViewItem]],
+        threateningCheck: Bool
     ) -> [PossibbleMovement] {
         var res: [PossibbleMovement] = []
         
@@ -28,22 +29,35 @@ struct PawnMovementRule: MovementRule {
             plainMoveMaxDistance = 2
         }
         
-        if pieceManager.currentSide != side {
-            return []
-        }
-
         iteratePossibleMoves(
             at: position,
             moveMethod: .directionsAndDistance(plainMoveDirection, plainMoveMaxDistance)
         ) { target in
-            let targetPiece = pieceManager.getPiece(at: target)
+            let targetPiece = getPiece(in: piecesLayer, at: target)
             
-            if targetPiece == .none {
-                res.append(PossibbleMovement(to: target, promotion: target.yIndex == promotionLine))
-                return MovePossibleCheckResult(couldMove: true, take: false)
+            if !threateningCheck {
+                let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                    in: piecesLayer,
+                    movePiece: .p(side),
+                    from: position,
+                    to: target
+                )
+                
+                guard !willLeadCheck else {
+                    return .leadsToCheck
+                }
             }
             
-            return MovePossibleCheckResult(couldMove: false, take: false)
+            guard let targetPieceSide = targetPiece.side else {
+                res.append(PossibbleMovement(to: target))
+                return .blankSquare
+            }
+            
+            if targetPieceSide == side {
+                return .blocked
+            }
+            
+            return .unknown
         }
         
         // 吃子
@@ -55,18 +69,31 @@ struct PawnMovementRule: MovementRule {
             at: position,
             moveMethod: .offsets(takesMoveOffsets)
         ) { target in
-            let targetPiece = pieceManager.getPiece(at: target)
+            let targetPiece = getPiece(in: piecesLayer, at: target)
+            
+            if !threateningCheck {
+                let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                    in: piecesLayer,
+                    movePiece: .p(side),
+                    from: position,
+                    to: target
+                )
+                
+                guard !willLeadCheck else {
+                    return .leadsToCheck
+                }
+            }
             
             if targetPiece == .none {
-                return MovePossibleCheckResult(couldMove: false, take: false)
+                return .unknown
             }
             
             if targetPiece.side != side {
                 res.append(PossibbleMovement(to: target, take: targetPiece))
-                return MovePossibleCheckResult(couldMove: true, take: true)
+                return .take
             }
             
-            return MovePossibleCheckResult(couldMove: false, take: false)
+            return .unknown
         }
         
         return res

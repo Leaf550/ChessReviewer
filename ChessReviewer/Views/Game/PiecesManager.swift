@@ -10,7 +10,7 @@ import Foundation
 class PiecesManager: ObservableObject {
     @Published var moveRecorder: MoveRecorder = MoveRecorder()
     var currentMove: Move?
-
+    
     var currentSide = PieceViewItem.PieceSide.white
     var currentTurn = 1
     var currentRound = 1
@@ -27,8 +27,11 @@ class PiecesManager: ObservableObject {
     var selectedPiecePossibleMovements: [PossibbleMovement] {
         guard let selectedPieceIndex = selectedPieceIndex else { return [] }
         guard let selectedPiece = selectedPiece  else { return [] }
-        return selectedPiece.movementRule.possibleMoves(at: selectedPieceIndex, in: self)
+        return selectedPiece.movementRule.possibleMoves(at: selectedPieceIndex, in: pieces, threateningCheck: false)
     }
+    
+    @Published var sideInCheck: PieceViewItem.PieceSide?
+    @Published var sideInCheckmate: PieceViewItem.PieceSide?
     
     @Published var pieces: [[PieceViewItem]] = [
         [
@@ -47,6 +50,9 @@ class PiecesManager: ObservableObject {
         ],
     ]
     
+}
+
+extension PiecesManager {
     func getPiece(at index: BoardIndex) -> PieceViewItem {
         guard (0...7).contains(index.xIndex),
               (0...7).contains(index.yIndex) else {
@@ -65,6 +71,24 @@ class PiecesManager: ObservableObject {
         let originPiece = getPiece(at: originIndex)
         pieces[7 - originIndex.yIndex][originIndex.xIndex] = .none
         pieces[7 - targetIndex.yIndex][targetIndex.xIndex] = originPiece
+        
+        if currentSide == sideInCheck {
+            sideInCheck = nil
+        }
+        
+        let checkingCheckSide: PieceViewItem.PieceSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
+        if CheckChecker.isInCheck(
+            for: checkingCheckSide,
+            in: pieces
+        ) {
+            sideInCheck = checkingCheckSide
+            if CheckChecker.isCheckmate(
+                for: checkingCheckSide,
+                in: pieces
+            ) {
+                sideInCheckmate = checkingCheckSide
+            }
+        }
         
         let newMove = Move(
             previous: currentMove,

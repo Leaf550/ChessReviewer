@@ -25,26 +25,15 @@ struct Piece: View {
     
     var body: some View {
         Button {
-            piecesManager.selectedPieceIndex = position
-            print("选中了棋子：\(pieceViewItem.pieceCommonName)，位置：\(position.toPositionStr())")
-            let piece = piecesManager.getPiece(at: position)
-            if piece != .none {
-                let moves = pieceViewItem.movementRule.possibleMoves(
-                    at: position,
-                    in: piecesManager
-                )
-                print("可移动位置：", moves.map {
-                    $0.to.toPositionStr()
-                    + ($0.take != nil ? " takes \($0.take?.pieceCommonName ?? "")" : "")
-                    + ($0.promotion ? "，升变" : "")
-                })
+            if pieceViewItem.side != piecesManager.currentSide {
+                return
             }
-            print("------------------------------------------------")
+            piecesManager.selectedPieceIndex = position
         } label: {
             ZStack {
                 Text(pieceViewItem.pieceNotation)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .foregroundColor(.white)
+                    .foregroundColor(pieceViewItem.side == .white ? .white : .black)
                     .font(.title2)
                     .fontWeight(.semibold)
             }
