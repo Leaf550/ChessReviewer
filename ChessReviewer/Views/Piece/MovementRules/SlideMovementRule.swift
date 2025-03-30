@@ -16,6 +16,10 @@ struct SlideMovementRule: MovementRule {
         at position: BoardIndex,
         in pieceManager: PiecesManager
     ) -> [PossibbleMovement] {
+        if pieceManager.currentSide != side {
+            return []
+        }
+        
         var res = [PossibbleMovement]()
         
         iteratePossibleMoves(

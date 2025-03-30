@@ -27,6 +27,10 @@ struct PawnMovementRule: MovementRule {
         if position.yIndex == startLine {
             plainMoveMaxDistance = 2
         }
+        
+        if pieceManager.currentSide != side {
+            return []
+        }
 
         iteratePossibleMoves(
             at: position,
