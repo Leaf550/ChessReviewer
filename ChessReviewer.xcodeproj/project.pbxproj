@@ -127,7 +127,7 @@
 		B78750A02D95B169002316D3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B7BC8C5F2D96C0830071E216 /* Move */,
+				B7A174B52D99295D009566E4 /* Move */,
 				B78750B42D969B29002316D3 /* Game */,
 				B78750AF2D969228002316D3 /* Piece */,
 				B78750AC2D968B5E002316D3 /* Color */,
@@ -176,7 +176,7 @@
 			path = Game;
 			sourceTree = "<group>";
 		};
-		B7BC8C5F2D96C0830071E216 /* Move */ = {
+		B7A174B52D99295D009566E4 /* Move */ = {
 			isa = PBXGroup;
 			children = (
 			);
