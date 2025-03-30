@@ -21,16 +21,16 @@ struct PawnMovementRule: MovementRule {
         let yDirection = side == .white ? 1 : -1
         
         // 普通移动
-        var plainMoveOffsets: [(Int, Int)] = []
+        let plainMoveDirection = side == .white ? [(0, 1)] : [(0, -1)]
+        var plainMoveMaxDistance = 1
         
-        plainMoveOffsets.append((0, 1 * yDirection))
         if position.yIndex == startLine {
-            plainMoveOffsets.append((0, 2 * yDirection))
+            plainMoveMaxDistance = 2
         }
 
         iteratePossibleMoves(
             at: position,
-            moveMethod: .offsets(plainMoveOffsets)
+            moveMethod: .directionsAndDistance(plainMoveDirection, plainMoveMaxDistance)
         ) { target in
             let targetPiece = pieceManager.getPiece(at: target)
             
