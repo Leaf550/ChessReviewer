@@ -35,7 +35,15 @@ struct PawnMovementRule: MovementRule {
         ) { target in
             let targetPiece = getPiece(in: piecesLayer, at: target)
             
-            if !threateningCheck {
+            var possibleCheckResult: MovePossibleCheckResult = .unknown
+            
+            if targetPiece.side == nil {
+                possibleCheckResult = .blankSquare
+            } else {
+                possibleCheckResult = .blocked
+            }
+            
+            if !threateningCheck && possibleCheckResult != .blocked {
                 let willLeadCheck = CheckChecker.willLeadToCheckedIf(
                     in: piecesLayer,
                     movePiece: .p(side),
@@ -48,16 +56,11 @@ struct PawnMovementRule: MovementRule {
                 }
             }
             
-            guard let targetPieceSide = targetPiece.side else {
+            if possibleCheckResult == .blankSquare {
                 res.append(PossibbleMovement(to: target))
-                return .blankSquare
             }
             
-            if targetPieceSide == side {
-                return .blocked
-            }
-            
-            return .unknown
+            return possibleCheckResult
         }
         
         // 吃子
@@ -71,7 +74,15 @@ struct PawnMovementRule: MovementRule {
         ) { target in
             let targetPiece = getPiece(in: piecesLayer, at: target)
             
-            if !threateningCheck {
+            var possibleCheckResult: MovePossibleCheckResult = .unknown
+            
+            if targetPiece == .none {
+                possibleCheckResult = .unknown
+            } else if targetPiece.side != side {
+                possibleCheckResult = .take
+            }
+            
+            if !threateningCheck && possibleCheckResult == .take {
                 let willLeadCheck = CheckChecker.willLeadToCheckedIf(
                     in: piecesLayer,
                     movePiece: .p(side),
@@ -84,16 +95,11 @@ struct PawnMovementRule: MovementRule {
                 }
             }
             
-            if targetPiece == .none {
-                return .unknown
-            }
-            
-            if targetPiece.side != side {
+            if possibleCheckResult == .take {
                 res.append(PossibbleMovement(to: target, take: targetPiece))
-                return .take
             }
             
-            return .unknown
+            return possibleCheckResult
         }
         
         return res

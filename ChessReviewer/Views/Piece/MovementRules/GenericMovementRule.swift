@@ -25,7 +25,17 @@ struct GenericMovementRule: MovementRule {
             let originPiece = getPiece(in: piecesLayer, at: position)
             let targetPiece = getPiece(in: piecesLayer, at: target)
             
-            if !threateningCheck {
+            var possibleCheckResult: MovePossibleCheckResult = .unknown
+            
+            if targetPiece.side == nil {
+                possibleCheckResult = .blankSquare
+            } else if let targetPieceSide = targetPiece.side, targetPieceSide == side {
+                possibleCheckResult = .blocked
+            } else {
+                possibleCheckResult = .take
+            }
+            
+            if !threateningCheck && possibleCheckResult != .blocked {
                 let willLeadCheck = CheckChecker.willLeadToCheckedIf(
                     in: piecesLayer,
                     movePiece: originPiece,
@@ -38,21 +48,13 @@ struct GenericMovementRule: MovementRule {
                 }
             }
             
-            guard let targetPieceSide = targetPiece.side else {
+            if possibleCheckResult == .blankSquare {
                 res.append(PossibbleMovement(to: target))
-                return .blankSquare
-            }
-            
-            if targetPieceSide == side {
-                return .blocked
-            }
-            
-            if targetPieceSide != side {
+            } else if possibleCheckResult == .take {
                 res.append(PossibbleMovement(to: target, take: targetPiece))
-                return .take
             }
             
-            return .unknown
+            return possibleCheckResult
         }
         
         return res
