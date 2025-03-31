@@ -9,11 +9,11 @@ import Foundation
 
 struct BishopMovementRule: MovementRule {
     let side: PieceViewItem.PieceSide
-    private let slideMovementRule: GenericMovementRule
+    private let genericMovementRule: GenericMovementRule
     
     init(side: PieceViewItem.PieceSide) {
         self.side = side
-        slideMovementRule = GenericMovementRule(
+        genericMovementRule = GenericMovementRule(
             side: side,
             moveMethod: .directionsAndDistance([(-1, 1), (1, 1), (-1, -1), (1, -1)], 7)
         )
@@ -24,6 +24,6 @@ struct BishopMovementRule: MovementRule {
         in piecesLayer: [[PieceViewItem]],
         threateningCheck: Bool
     ) -> [PossibbleMovement] {
-        slideMovementRule.possibleMoves(at: position, in: piecesLayer, threateningCheck: threateningCheck)
+        genericMovementRule.possibleMoves(at: position, in: piecesLayer, threateningCheck: threateningCheck)
     }
 }
