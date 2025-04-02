@@ -36,10 +36,30 @@ struct PiecesLayer: View {
             ForEach(0 ..< 8) { y in
                 HStack(spacing: 0) {
                     ForEach(0 ..< 8) { x in
-                        PieceCell(
-                            manager: piecesManager,
-                            position: BoardIndex(x: x, y: 7 - y)
-                        )
+                        ZStack {
+                            let position = BoardIndex(x: x, y: 7 - y)
+                            let pieceItem = piecesManager.getPiece(at: position)
+                            let isPossibleMove = piecesManager.selectedPiecePossibleMovements.contains { $0.to == position }
+                            if (isInCheckKing(pieceItem: pieceItem)) {
+                                Circle()
+                                .foregroundStyle(Color(hex: "#ff2222"))
+                                    .frame(width:  35)
+                                    .blur(radius: 5)
+                            }
+                            EquatableView(
+                                content: PieceCell(
+                                    pieceItem: pieceItem,
+                                    isPossibleMove: isPossibleMove,
+                                    position: position
+                                ) {
+                                    guard piecesManager.currentSide == pieceItem.side else { return }
+                                    piecesManager.selectedPieceIndex = position
+                                } onMoveIndicatorTapped: {
+                                    guard let selectedPieceIndex = piecesManager.selectedPieceIndex else { return }
+                                    piecesManager.movePiece(from: selectedPieceIndex, to: position)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -54,6 +74,13 @@ struct PiecesLayer: View {
                 .font(.subheadline)
         }
         .foregroundColor(.red)
+    }
+    
+    private func isInCheckKing(pieceItem: PieceViewItem) -> Bool {
+        if let sideInCkeck = piecesManager.sideInCheck {
+            return pieceItem == .k(sideInCkeck)
+        }
+        return false
     }
 }
 

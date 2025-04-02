@@ -7,26 +7,15 @@
 
 import SwiftUI
 
-struct PieceCell: View {
-    @ObservedObject var manager: PiecesManager
-
+struct PieceCell: View, Equatable {
+    let pieceItem: PieceViewItem
+    let isPossibleMove: Bool
     let position: BoardIndex
-    var pieceItem: PieceViewItem {
-        manager.getPiece(at: position)
-    }
-    
-    private var isPossibleMove: Bool {
-        manager.selectedPiecePossibleMovements.contains { $0.to == position }
-    }
+    var onPieceButtonTapped: (() -> Void) = {}
+    var onMoveIndicatorTapped: (() -> Void) = {}
     
     var body: some View {
         ZStack {
-            if (isInCheckKing()) {
-                Circle()
-                .foregroundStyle(Color(hex: "#ff3333"))
-                    .frame(width:  35)
-                    .blur(radius: 5)
-            }
             switch pieceItem {
                 case .none:
                     Color.clear
@@ -34,31 +23,40 @@ struct PieceCell: View {
                         .allowsHitTesting(false)
                 default:
                     Piece(
-                        position: position,
-                        piecesManager: manager
-                    )
+                        pieceViewItem: pieceItem
+                    ) {
+                        onPieceButtonTapped()
+                    }
             }
             
             if isPossibleMove {
-                MoveIndicator(manager: manager, targetIndex: position)
+                MoveIndicator(targetIndex: position) {
+                    onMoveIndicatorTapped()
+                }
             }
         }
     }
     
-    private func isInCheckKing() -> Bool {
-        if let sideInCkeck = manager.sideInCheck {
-            return pieceItem == .k(sideInCkeck)
-        }
-        return false
+    static func == (lhs: PieceCell, rhs: PieceCell) -> Bool {
+        lhs.pieceItem == rhs.pieceItem && lhs.position == rhs.position && lhs.isPossibleMove == rhs.isPossibleMove
     }
 }
 
 struct PieceCell_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            PieceCell(manager: PiecesManager(), position: BoardIndex(x: 4, y: 0))
+            PieceCell(
+                pieceItem: .r(.white),
+                isPossibleMove: true,
+                position: BoardIndex.getOriginIndex()
+            )
+            PieceCell(
+                pieceItem: .r(.white),
+                isPossibleMove: false,
+                position: BoardIndex.getOriginIndex()
+            )
         }
-        .frame(width: 50, height: 50)
+        .frame(width: 50, height: 100)
         .background(.blue)
     }
 }

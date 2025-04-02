@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct MoveIndicator: View {
-    @ObservedObject var manager: PiecesManager
     let targetIndex: BoardIndex
+    let onMoveIndicatorTapped: (() -> Void)
     
     var body: some View {
         Button {
-            guard let selectedIndex = manager.selectedPieceIndex else { return }
-            manager.movePiece(from: selectedIndex, to: targetIndex)
+            onMoveIndicatorTapped()
         } label: {
             ZStack {
                 Rectangle()
@@ -31,7 +30,7 @@ struct MoveIndicator: View {
 struct MoveIndicator_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            MoveIndicator(manager: PiecesManager(), targetIndex: BoardIndex.getOriginIndex())
+            MoveIndicator(targetIndex: BoardIndex.getOriginIndex()) {}
         }
         .frame(width: 200, height: 200)
         .background(.blue)

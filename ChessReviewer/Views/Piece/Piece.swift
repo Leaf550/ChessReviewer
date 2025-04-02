@@ -8,27 +8,20 @@
 import SwiftUI
 
 struct Piece: View {
-    @ObservedObject var piecesManager: PiecesManager
-    
-    let position: BoardIndex
-    var pieceViewItem: PieceViewItem {
-        piecesManager.getPiece(at: position)
-    }
+    let pieceViewItem: PieceViewItem
+    var onPieceButtonTapped: (() -> Void)
     
     init(
-        position: BoardIndex,
-        piecesManager: PiecesManager
+        pieceViewItem: PieceViewItem,
+        onPieceButtonTapped: @escaping (() -> Void)
     ) {
-        self.position = position
-        self.piecesManager = piecesManager
+        self.pieceViewItem = pieceViewItem
+        self.onPieceButtonTapped = onPieceButtonTapped
     }
     
     var body: some View {
         Button {
-            if pieceViewItem.side != piecesManager.currentSide {
-                return
-            }
-            piecesManager.selectedPieceIndex = position
+            onPieceButtonTapped()
         } label: {
             ZStack {
                 Text(pieceViewItem.pieceNotation)
@@ -46,7 +39,7 @@ struct Material_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             BoardCell(cellIndex: BoardIndex.getOriginIndex())
-            Piece(position: BoardIndex.getOriginIndex(), piecesManager: PiecesManager())
+            Piece(pieceViewItem: .r(.white)) {}
         }
         .frame(width: 50, height: 50)
     }
