@@ -78,12 +78,12 @@
 			isa = PBXGroup;
 			children = (
 				B7BC8C602D96E5FC0071E216 /* MovementRule.swift */,
+				B70604182D982C9700C0BE2E /* GenericMovementRule.swift */,
 				B706040C2D96E77800C0BE2E /* PawnMovementRule.swift */,
 				B70604102D97E17900C0BE2E /* RookMovementRule.swift */,
-				B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */,
-				B70604182D982C9700C0BE2E /* GenericMovementRule.swift */,
-				B706041A2D982F1200C0BE2E /* QueenMovementRule.swift */,
 				B706041C2D982F6100C0BE2E /* KnightMovementRule.swift */,
+				B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */,
+				B706041A2D982F1200C0BE2E /* QueenMovementRule.swift */,
 				B70604202D9831DF00C0BE2E /* KingMovementRule.swift */,
 			);
 			path = MovementRules;

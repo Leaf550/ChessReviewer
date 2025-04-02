@@ -22,6 +22,8 @@ struct RookMovementRule: MovementRule {
     func possibleMoves(
         at position: BoardIndex,
         in piecesLayer: [[PieceViewItem]],
+        canShortCastaling: Bool,
+        canLongCastaling: Bool,
         threateningCheck: Bool
     ) -> [PossibbleMovement] {
         genericMovementRule.possibleMoves(at: position, in: piecesLayer, threateningCheck: threateningCheck)

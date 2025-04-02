@@ -14,6 +14,8 @@ struct GenericMovementRule: MovementRule {
     func possibleMoves(
         at position: BoardIndex,
         in piecesLayer: [[PieceViewItem]],
+        canShortCastaling: Bool = false,
+        canLongCastaling: Bool = false,
         threateningCheck: Bool
     ) -> [PossibbleMovement] {
         var res = [PossibbleMovement]()
@@ -43,7 +45,7 @@ struct GenericMovementRule: MovementRule {
                     to: target
                 )
                 
-                guard !willLeadCheck else {
+                if willLeadCheck {
                     return .leadsToCheck
                 }
             }

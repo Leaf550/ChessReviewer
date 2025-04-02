@@ -13,6 +13,8 @@ struct PawnMovementRule: MovementRule {
     func possibleMoves(
         at position: BoardIndex,
         in piecesLayer: [[PieceViewItem]],
+        canShortCastaling: Bool,
+        canLongCastaling: Bool,
         threateningCheck: Bool
     ) -> [PossibbleMovement] {
         var res: [PossibbleMovement] = []

@@ -18,6 +18,8 @@ struct CheckChecker {
                 let possibleMovements = piece.movementRule.possibleMoves(
                     at: BoardIndex(x: xIndex, y: yIndex),
                     in: piecesLayer,
+                    canShortCastaling: false,
+                    canLongCastaling: false,
                     threateningCheck: true
                 )
                 
@@ -46,6 +48,8 @@ struct CheckChecker {
                 let possibleMovements = piece.movementRule.possibleMoves(
                     at: BoardIndex(x: xIndex, y: yIndex),
                     in: piecesLayer,
+                    canShortCastaling: false,
+                    canLongCastaling: false,
                     threateningCheck: false
                 )
                 if possibleMovements.count != 0 {

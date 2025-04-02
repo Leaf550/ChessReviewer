@@ -18,7 +18,13 @@ struct PiecesLayer: View {
         guard let targetMovement = (piecesManager.selectedPiecePossibleMovements.first {
             $0.to == targetIndex
         }) else { return }
-        piecesManager.movePiece(from: originIndex, to: targetMovement.to)
+        
+        piecesManager.movePiece(
+            from: originIndex,
+            to: targetMovement.to,
+            isShortCastaling: targetMovement.shortCastaling,
+            isLongCastling: targetMovement.longCastaling
+        )
     }
     
     var body: some View {
@@ -56,7 +62,7 @@ struct PiecesLayer: View {
                                     piecesManager.selectedPieceIndex = position
                                 } onMoveIndicatorTapped: {
                                     guard let selectedPieceIndex = piecesManager.selectedPieceIndex else { return }
-                                    piecesManager.movePiece(from: selectedPieceIndex, to: position)
+                                    movePiece(from: selectedPieceIndex, to: position)
                                 }
                             )
                         }

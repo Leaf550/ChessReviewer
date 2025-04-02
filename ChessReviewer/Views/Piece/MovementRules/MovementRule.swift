@@ -11,6 +11,8 @@ struct PossibbleMovement {
     var to: BoardIndex
     var take: PieceViewItem? = nil
     var promotion: Bool = false
+    var shortCastaling: Bool = false
+    var longCastaling: Bool = false
 }
 
 protocol MovementRule {
@@ -19,6 +21,8 @@ protocol MovementRule {
     func possibleMoves(
         at position: BoardIndex,
         in piecesLayer: [[PieceViewItem]],
+        canShortCastaling: Bool,
+        canLongCastaling: Bool,
         threateningCheck: Bool
     ) -> [PossibbleMovement]
 }
@@ -99,6 +103,8 @@ struct EmptyMovement: MovementRule {
     func possibleMoves(
         at position: BoardIndex,
         in piecesLayer: [[PieceViewItem]],
+        canShortCastaling: Bool,
+        canLongCastaling: Bool,
         threateningCheck: Bool
     ) -> [PossibbleMovement] {
         return []

@@ -25,6 +25,8 @@ struct KnightMovementRule: MovementRule {
     func possibleMoves(
         at position: BoardIndex,
         in piecesLayer: [[PieceViewItem]],
+        canShortCastaling: Bool,
+        canLongCastaling: Bool,
         threateningCheck: Bool
     ) -> [PossibbleMovement] {
         return genericMovementRule.possibleMoves(at: position, in: piecesLayer, threateningCheck: threateningCheck)
