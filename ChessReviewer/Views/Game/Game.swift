@@ -12,8 +12,6 @@ struct Game: View {
     
     var body: some View {
         VStack {
-            Text(getCheckmateTitle())
-                .frame(height: 20)
             Text(getCheckTitle())
                 .frame(height: 20)
             ScrollView(.horizontal, showsIndicators: false) {
@@ -50,16 +48,11 @@ struct Game: View {
         }
     }
     
-    private func getCheckmateTitle() -> String {
-        if let sideInCheckmate = piecesManager.sideInCheckmate {
-            return "Chackmate to \(sideInCheckmate == .white ? "white" : "black")!"
-        }
-        return ""
-    }
-    
     private func getCheckTitle() -> String {
-        if let sideInCheck = piecesManager.sideInCheck {
-            return "Chack to \(sideInCheck == .white ? "white" : "black")!"
+        if let sideInCheckmate = piecesManager.sideInCheckmate {
+            return "Checkmate to \(sideInCheckmate == .white ? "white" : "black")!"
+        } else if let sideInCheck = piecesManager.sideInCheck {
+            return "Check to \(sideInCheck == .white ? "white" : "black")!"
         }
         return ""
     }
