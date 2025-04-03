@@ -42,6 +42,10 @@ class PiecesManager: ObservableObject {
         sideInCheck != .black && !blackARookMoved && !blackKingMoved
     }
     
+    @Published var showPromotionAlert = false
+    var promotionPosition: BoardIndex?
+    var promotionSide: PieceViewItem.PieceSide?
+    
     @Published var selectedPieceIndex: BoardIndex?
     
     var selectedPiece: PieceViewItem? {
@@ -122,6 +126,13 @@ extension PiecesManager {
             moveCastalingRook(isShortCastaling: isShortCastaling, isLongCastling: isLongCastling)
         }
         
+        if originPiece == .p(.white) && targetIndex.yIndex == 7
+            || originPiece == .p(.black) && targetIndex.yIndex == 0 {
+            promotionPosition = targetIndex
+            promotionSide = originPiece.side
+            showPromotionAlert.toggle()
+        }
+        
         toggleCastlingCondition(movedPiece: originPiece, originPosition: originIndex)
         
         if currentSide == sideInCheck {
@@ -129,18 +140,7 @@ extension PiecesManager {
         }
         
         let checkingCheckSide: PieceViewItem.PieceSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
-        if CheckChecker.isInCheck(
-            for: checkingCheckSide,
-            in: pieces
-        ) {
-            sideInCheck = checkingCheckSide
-            if CheckChecker.isCheckmate(
-                for: checkingCheckSide,
-                in: pieces
-            ) {
-                sideInCheckmate = checkingCheckSide
-            }
-        }
+        toggleCheckStatus(for: checkingCheckSide)
         
         let newMove = Move(
             previous: currentMove,
@@ -165,6 +165,31 @@ extension PiecesManager {
         }
         currentSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
         currentTurn += 1
+    }
+    
+    func promotion(to piece: PieceViewItem) {
+        guard let promotionPosition = promotionPosition else { return }
+        pieces[7 - promotionPosition.yIndex][promotionPosition.xIndex] = piece
+        
+        toggleCheckStatus(for: currentSide)
+        
+        self.promotionPosition = nil
+        promotionSide = nil
+    }
+    
+    private func toggleCheckStatus(for side: PieceViewItem.PieceSide) {
+        if CheckChecker.isInCheck(
+            for: side,
+            in: pieces
+        ) {
+            sideInCheck = side
+            if CheckChecker.isCheckmate(
+                for: side,
+                in: pieces
+            ) {
+                sideInCheckmate = side
+            }
+        }
     }
     
     private func moveCastalingRook(

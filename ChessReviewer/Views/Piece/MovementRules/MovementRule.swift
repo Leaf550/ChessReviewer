@@ -10,7 +10,6 @@ import Foundation
 struct PossibbleMovement {
     var to: BoardIndex
     var take: PieceViewItem? = nil
-    var promotion: Bool = false
     var shortCastaling: Bool = false
     var longCastaling: Bool = false
 }

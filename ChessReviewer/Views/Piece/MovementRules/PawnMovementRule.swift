@@ -20,7 +20,6 @@ struct PawnMovementRule: MovementRule {
         var res: [PossibbleMovement] = []
         
         let startLine = side == .white ? 1 : 6
-        let promotionLine = side == .white ? 7 : 0
         let yDirection = side == .white ? 1 : -1
         
         // 普通移动

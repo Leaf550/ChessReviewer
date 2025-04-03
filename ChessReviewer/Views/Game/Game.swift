@@ -14,6 +14,8 @@ struct Game: View {
         VStack {
             Text(getCheckmateTitle())
                 .frame(height: 20)
+            Text(getCheckTitle())
+                .frame(height: 20)
             ScrollView(.horizontal, showsIndicators: false) {
                 Text(getMovesString())
                     .fixedSize(horizontal: true, vertical: false)
@@ -28,11 +30,36 @@ struct Game: View {
             }
             .padding()
         }
+        .alert("升变！", isPresented: $piecesManager.showPromotionAlert) {
+            Button("车", role: .none) {
+                guard let promotionSide = piecesManager.promotionSide else { return }
+                piecesManager.promotion(to: .r(promotionSide))
+            }
+            Button("马", role: .none) {
+                guard let promotionSide = piecesManager.promotionSide else { return }
+                piecesManager.promotion(to: .n(promotionSide))
+            }
+            Button("象", role: .none) {
+                guard let promotionSide = piecesManager.promotionSide else { return }
+                piecesManager.promotion(to: .b(promotionSide))
+            }
+            Button("后", role: .none) {
+                guard let promotionSide = piecesManager.promotionSide else { return }
+                piecesManager.promotion(to: .q(promotionSide))
+            }
+        }
     }
     
     private func getCheckmateTitle() -> String {
         if let sideInCheckmate = piecesManager.sideInCheckmate {
             return "Chackmate to \(sideInCheckmate == .white ? "white" : "black")!"
+        }
+        return ""
+    }
+    
+    private func getCheckTitle() -> String {
+        if let sideInCheck = piecesManager.sideInCheck {
+            return "Chack to \(sideInCheck == .white ? "white" : "black")!"
         }
         return ""
     }
