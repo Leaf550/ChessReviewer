@@ -60,4 +60,28 @@ extension PieceViewItem {
             case .none: return ""
         }
     }
+    
+    var pieceCommonNameWithNoSide: String {
+        switch self {
+            case .p(_): return  "pawn"
+            case .r(_): return  "rook"
+            case .n(_): return  "knight"
+            case .b(_): return  "bishop"
+            case .q(_): return  "queen"
+            case .k(_): return  "king"
+            case .none: return ""
+        }
+    }
+    
+    var pieceImageName: String {
+        switch self {
+            case .p(let side): return  "\(pieceCommonNameWithNoSide)_\(side == .white ? "white" : "black")"
+            case .r(let side): return  "\(pieceCommonNameWithNoSide)_\(side == .white ? "white" : "black")"
+            case .n(let side): return  "\(pieceCommonNameWithNoSide)_\(side == .white ? "white" : "black")"
+            case .b(let side): return  "\(pieceCommonNameWithNoSide)_\(side == .white ? "white" : "black")"
+            case .q(let side): return  "\(pieceCommonNameWithNoSide)_\(side == .white ? "white" : "black")"
+            case .k(let side): return  "\(pieceCommonNameWithNoSide)_\(side == .white ? "white" : "black")"
+            case .none: return ""
+        }
+    }
 }

@@ -95,6 +95,6 @@ struct PiecesLayer_Previews: PreviewProvider {
         ZStack {
             Board()
             PiecesLayer(piecesManager: PiecesManager())
-        }
+        }.padding()
     }
 }

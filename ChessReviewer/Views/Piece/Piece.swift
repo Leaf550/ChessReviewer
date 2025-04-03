@@ -24,11 +24,9 @@ struct Piece: View {
             onPieceButtonTapped()
         } label: {
             ZStack {
-                Text(pieceViewItem.pieceNotation)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .foregroundColor(pieceViewItem.side == .white ? .white : .black)
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                Image(pieceViewItem.pieceImageName)
+                    .resizable()
+                    .padding(3)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
