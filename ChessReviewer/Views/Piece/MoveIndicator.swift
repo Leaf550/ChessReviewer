@@ -20,7 +20,7 @@ struct MoveIndicator: View {
                     .foregroundColor(.clear)
                 Circle()
                     .frame(width: 14)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(hex: "#aaaaaa"))
                     .opacity(0.6)
             }
         }
