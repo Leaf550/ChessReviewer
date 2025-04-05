@@ -42,7 +42,7 @@ class Move {
 class MoveRecorder: ObservableObject {
     @Published var timeline: Move?
     
-    func mainBranchRoundsArray() -> [String] {
+    var mainBranchRoundsArray: [String] {
         guard let start = timeline else { return [] }
         
         var cur: Move? = start
@@ -66,7 +66,7 @@ class MoveRecorder: ObservableObject {
         return rounds
     }
     
-    func mainBranchMovesArray() -> [String] {
+    var mainBranchMovesArray: [String] {
         var moves: [String] = []
         var cur: Move? = timeline
         
@@ -78,7 +78,7 @@ class MoveRecorder: ObservableObject {
         return moves
     }
     
-    func mainBranchMovesString() -> String {
-        return mainBranchMovesArray().joined(separator: " ")
+    var mainBranchMovesString: String {
+        return mainBranchMovesArray.joined(separator: " ")
     }
 }

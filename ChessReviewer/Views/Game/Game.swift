@@ -15,12 +15,7 @@ struct Game: View {
         VStack {
             Text(getCheckTitle())
                 .frame(height: 20)
-            ScrollView(.horizontal, showsIndicators: false) {
-                Text(getMovesString())
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-            .frame(height: 20)
-            .padding([.leading, .trailing], 20)
+            MainBranchHistoryButtons(piecesManager: piecesManager)
             ZStack {
                 Board(reversed: boardReversed) { _ in
                     piecesManager.selectedPieceIndex = nil
@@ -45,12 +40,6 @@ struct Game: View {
             return "Check to \(sideInCheck == .white ? "white" : "black")!"
         }
         return ""
-    }
-    
-    private func getMovesString() -> String {
-        piecesManager.moveRecorder.mainBranchRoundsArray().enumerated().map { (index, move) in
-            "\(index + 1): \(move)"
-        }.joined(separator: " | ")
     }
 }
 
