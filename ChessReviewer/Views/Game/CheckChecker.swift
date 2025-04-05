@@ -8,14 +8,14 @@
 import Foundation
 
 struct CheckChecker {
-    static func isInCheck(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewItem]]) -> Bool {
+    static func isInCheck(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewModel]]) -> Bool {
         for (yIndex, piecesInRow) in piecesLayer.reversed().enumerated() {
             for (xIndex, piece) in piecesInRow.enumerated() {
-                if piece.side == side {
+                if piece.item.side == side {
                     continue
                 }
                 
-                let possibleMovements = piece.movementRule.possibleMoves(
+                let possibleMovements = piece.item.movementRule.possibleMoves(
                     at: BoardIndex(x: xIndex, y: yIndex),
                     in: piecesLayer,
                     canShortCastaling: false,
@@ -38,14 +38,14 @@ struct CheckChecker {
         return false
     }
     
-    static func isCheckmate(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewItem]]) -> Bool {
+    static func isCheckmate(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewModel]]) -> Bool {
         for (yIndex, piecesInRow) in piecesLayer.reversed().enumerated() {
             for (xIndex, piece) in piecesInRow.enumerated() {
-                if piece.side != side {
+                if piece.item.side != side {
                     continue
                 }
                 
-                let possibleMovements = piece.movementRule.possibleMoves(
+                let possibleMovements = piece.item.movementRule.possibleMoves(
                     at: BoardIndex(x: xIndex, y: yIndex),
                     in: piecesLayer,
                     canShortCastaling: false,
@@ -62,7 +62,7 @@ struct CheckChecker {
     }
     
     static func willLeadToCheckedIf(
-        in originPiecesLayer: [[PieceViewItem]],
+        in originPiecesLayer: [[PieceViewModel]],
         movePiece pieceItem: PieceViewItem,
         from originPossition: BoardIndex,
         to targetPosition: BoardIndex
@@ -76,17 +76,22 @@ struct CheckChecker {
               (0...7).contains(targetPosition.yIndex) else {
             return false
         }
-        tmpPiecesLayout[7 - originPossition.yIndex][originPossition.xIndex] = .none
-        tmpPiecesLayout[7 - targetPosition.yIndex][targetPosition.xIndex] = pieceItem
+        let originPiece = tmpPiecesLayout[7 - originPossition.yIndex][originPossition.xIndex]
+        var targetPiece = tmpPiecesLayout[7 - targetPosition.yIndex][targetPosition.xIndex]
+        if targetPiece.item != .none {
+            targetPiece = PieceViewModel(.none)
+        }
+        tmpPiecesLayout[7 - originPossition.yIndex][originPossition.xIndex] = targetPiece
+        tmpPiecesLayout[7 - targetPosition.yIndex][targetPosition.xIndex] = originPiece
         
         return isInCheck(for: side, in: tmpPiecesLayout)
     }
     
-    private static func getPiece(in piecesLayer: [[PieceViewItem]], at possition: BoardIndex) -> PieceViewItem {
+    private static func getPiece(in piecesLayer: [[PieceViewModel]], at possition: BoardIndex) -> PieceViewItem {
         guard (0...7).contains(possition.xIndex),
               (0...7).contains(possition.yIndex) else {
             return .none
         }
-        return piecesLayer[7 - possition.yIndex][possition.xIndex]
+        return piecesLayer[7 - possition.yIndex][possition.xIndex].item
     }
 }

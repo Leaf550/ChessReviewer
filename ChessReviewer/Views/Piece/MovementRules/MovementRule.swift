@@ -19,7 +19,7 @@ protocol MovementRule {
     
     func possibleMoves(
         at position: BoardIndex,
-        in piecesLayer: [[PieceViewItem]],
+        in piecesLayer: [[PieceViewModel]],
         canShortCastaling: Bool,
         canLongCastaling: Bool,
         threateningCheck: Bool
@@ -42,12 +42,12 @@ enum MovePossibleCheckResult {
 }
 
 extension MovementRule {
-    func getPiece(in piecesLayer: [[PieceViewItem]], at possition: BoardIndex) -> PieceViewItem {
+    func getPiece(in piecesLayer: [[PieceViewModel]], at possition: BoardIndex) -> PieceViewItem {
         guard (0...7).contains(possition.xIndex),
               (0...7).contains(possition.yIndex) else {
             return .none
         }
-        return piecesLayer[7 - possition.yIndex][possition.xIndex]
+        return piecesLayer[7 - possition.yIndex][possition.xIndex].item
     }
     
     func iteratePossibleMoves(
@@ -101,7 +101,7 @@ struct EmptyMovement: MovementRule {
     
     func possibleMoves(
         at position: BoardIndex,
-        in piecesLayer: [[PieceViewItem]],
+        in piecesLayer: [[PieceViewModel]],
         canShortCastaling: Bool,
         canLongCastaling: Bool,
         threateningCheck: Bool

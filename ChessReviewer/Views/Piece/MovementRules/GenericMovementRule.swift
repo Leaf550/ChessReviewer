@@ -13,7 +13,7 @@ struct GenericMovementRule: MovementRule {
     
     func possibleMoves(
         at position: BoardIndex,
-        in piecesLayer: [[PieceViewItem]],
+        in piecesLayer: [[PieceViewModel]],
         canShortCastaling: Bool = false,
         canLongCastaling: Bool = false,
         threateningCheck: Bool

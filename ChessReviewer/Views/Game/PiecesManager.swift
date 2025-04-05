@@ -6,6 +6,16 @@
 //
 
 import Foundation
+import SwiftUI
+
+struct PieceViewModel: Identifiable {
+    var id = UUID()
+    var item: PieceViewItem
+    
+    init(_ item: PieceViewItem) {
+        self.item = item
+    }
+}
 
 class PiecesManager: ObservableObject {
     @Published var moveRecorder: MoveRecorder = MoveRecorder()
@@ -78,20 +88,54 @@ class PiecesManager: ObservableObject {
         }
     }
     
-    @Published var pieces: [[PieceViewItem]] = [
+    @Published var pieces: [[PieceViewModel]] = [
         [
-            .r(.black), .n(.black), .b(.black), .q(.black),
-            .k(.black), .b(.black), .n(.black), .r(.black)
+            PieceViewModel(.r(.black)), PieceViewModel(.n(.black)),
+            PieceViewModel(.b(.black)), PieceViewModel(.q(.black)),
+            PieceViewModel(.k(.black)), PieceViewModel(.b(.black)),
+            PieceViewModel(.n(.black)), PieceViewModel(.r(.black))
         ],
-        [PieceViewItem](repeating: .p(.black), count: 8),
-        [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .none, count: 8),
-        [PieceViewItem](repeating: .p(.white), count: 8),
         [
-            .r(.white), .n(.white), .b(.white), .q(.white),
-            .k(.white), .b(.white), .n(.white), .r(.white)
+            PieceViewModel(.p(.black)), PieceViewModel(.p(.black)),
+            PieceViewModel(.p(.black)), PieceViewModel(.p(.black)),
+            PieceViewModel(.p(.black)), PieceViewModel(.p(.black)),
+            PieceViewModel(.p(.black)), PieceViewModel(.p(.black))
+        ],
+        [
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none)
+        ],
+        [
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none)
+        ],
+        [
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none)
+        ],
+        [
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none),
+            PieceViewModel(.none), PieceViewModel(.none)
+        ],
+        [
+            PieceViewModel(.p(.white)), PieceViewModel(.p(.white)),
+            PieceViewModel(.p(.white)), PieceViewModel(.p(.white)),
+            PieceViewModel(.p(.white)), PieceViewModel(.p(.white)),
+            PieceViewModel(.p(.white)), PieceViewModel(.p(.white))
+        ],
+        [
+            PieceViewModel(.r(.white)), PieceViewModel(.n(.white)),
+            PieceViewModel(.b(.white)), PieceViewModel(.q(.white)),
+            PieceViewModel(.k(.white)), PieceViewModel(.b(.white)),
+            PieceViewModel(.n(.white)), PieceViewModel(.r(.white))
         ],
     ]
     
@@ -103,7 +147,7 @@ extension PiecesManager {
               (0...7).contains(index.yIndex) else {
             return .none
         }
-        return pieces[7 - index.yIndex][index.xIndex]
+        return pieces[7 - index.yIndex][index.xIndex].item
     }
     
     func movePiece(
@@ -118,22 +162,28 @@ extension PiecesManager {
               (0...7).contains(targetIndex.yIndex) else {
             return
         }
-        let originPiece = getPiece(at: originIndex)
-        pieces[7 - originIndex.yIndex][originIndex.xIndex] = .none
-        pieces[7 - targetIndex.yIndex][targetIndex.xIndex] = originPiece
+        let originPiece = pieces[7 - originIndex.yIndex][originIndex.xIndex]
+        var targetPiece = pieces[7 - targetIndex.yIndex][targetIndex.xIndex]
+        if targetPiece.item != .none {
+            targetPiece = PieceViewModel(.none)
+        }
+        withAnimation(.easeOut(duration: 0.15)) {
+            pieces[7 - originIndex.yIndex][originIndex.xIndex] = targetPiece
+            pieces[7 - targetIndex.yIndex][targetIndex.xIndex] = originPiece
+        }
         
         if isShortCastaling || isLongCastling {
             moveCastalingRook(isShortCastaling: isShortCastaling, isLongCastling: isLongCastling)
         }
         
-        if originPiece == .p(.white) && targetIndex.yIndex == 7
-            || originPiece == .p(.black) && targetIndex.yIndex == 0 {
+        if originPiece.item == .p(.white) && targetIndex.yIndex == 7
+            || originPiece.item == .p(.black) && targetIndex.yIndex == 0 {
             promotionPosition = targetIndex
-            promotionSide = originPiece.side
+            promotionSide = originPiece.item.side
             showPromotionAlert.toggle()
         }
         
-        toggleCastlingCondition(movedPiece: originPiece, originPosition: originIndex)
+        toggleCastlingCondition(movedPiece: originPiece.item, originPosition: originIndex)
         
         if currentSide == sideInCheck {
             sideInCheck = nil
@@ -169,7 +219,7 @@ extension PiecesManager {
     
     func promotion(to piece: PieceViewItem) {
         guard let promotionPosition = promotionPosition else { return }
-        pieces[7 - promotionPosition.yIndex][promotionPosition.xIndex] = piece
+        pieces[7 - promotionPosition.yIndex][promotionPosition.xIndex] = PieceViewModel(piece)
         
         toggleCheckStatus(for: currentSide)
         
@@ -198,7 +248,6 @@ extension PiecesManager {
     ) {
         var rookPosition = BoardIndex.getOriginIndex()
         var rookTarget = BoardIndex.getOriginIndex()
-        var rootTargetPositionPiece: PieceViewItem
         
         switch currentSide {
             case.white:
@@ -209,7 +258,6 @@ extension PiecesManager {
                     rookPosition = BoardIndex(x: 7, y: 0)
                     rookTarget = BoardIndex(x: 5, y: 0)
                 }
-                rootTargetPositionPiece = .r(.white)
             case .black:
                 if isLongCastling {
                     rookPosition = BoardIndex(x: 0, y: 7)
@@ -218,11 +266,12 @@ extension PiecesManager {
                     rookPosition = BoardIndex(x: 7, y: 7)
                     rookTarget = BoardIndex(x: 5, y: 7)
                 }
-                rootTargetPositionPiece = .r(.black)
         }
-        
-        pieces[7 - rookPosition.yIndex][rookPosition.xIndex] = .none
-        pieces[7 - rookTarget.yIndex][rookTarget.xIndex] = rootTargetPositionPiece
+        withAnimation(.easeOut(duration: 0.15)) { [weak self] in
+            guard let rookItemModel = self?.pieces[7 - rookPosition.yIndex][rookPosition.xIndex] else { return }
+            self?.pieces[7 - rookPosition.yIndex][rookPosition.xIndex] = PieceViewModel(.none)
+            self?.pieces[7 - rookTarget.yIndex][rookTarget.xIndex] = rookItemModel
+        }
     }
     
     private func toggleCastlingCondition(movedPiece: PieceViewItem, originPosition: BoardIndex) {

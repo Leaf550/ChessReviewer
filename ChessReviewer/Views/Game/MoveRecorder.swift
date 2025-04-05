@@ -16,7 +16,7 @@ class Move {
     var origin: BoardIndex
     var target: BoardIndex
     var side: PieceViewItem.PieceSide
-    var currentPiecesLayout: [[PieceViewItem]]
+    var currentPiecesLayout: [[PieceViewModel]]
     
     init(
         next: Move? = nil,
@@ -26,7 +26,7 @@ class Move {
         from origin: BoardIndex,
         to target: BoardIndex,
         side: PieceViewItem.PieceSide,
-        currentPiecesLayout: [[PieceViewItem]]
+        currentPiecesLayout: [[PieceViewModel]]
     ) {
         self.next = next
         self.previous = previous

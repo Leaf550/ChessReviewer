@@ -15,7 +15,8 @@ struct PieceCell: View, Equatable {
     var onMoveIndicatorTapped: (() -> Void) = {}
     
     var body: some View {
-        ZStack {
+        print("render PieceCell")
+        return ZStack {
             switch pieceItem {
                 case .none:
                     Color.clear

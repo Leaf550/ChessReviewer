@@ -38,11 +38,19 @@ struct PiecesLayer: View {
     }
         
     private func piecesGrid() -> some View {
-        VStack(spacing: 0) {
-            ForEach(0 ..< 8) { y in
-                HStack(spacing: 0) {
-                    ForEach(0 ..< 8) { x in
-                        let position = BoardIndex(x: x, y: 7 - y)
+        GeometryReader { geometry in
+            let size = geometry.size.width / 8.0
+            let columns = [GridItem(.adaptive(minimum: size), spacing: 0)]
+            LazyVGrid(columns: columns, spacing: 0) {
+                ForEach(
+                    piecesManager.pieces.flatMap { $0 },
+                    id: \.id
+                ) { model in
+                    let index = piecesManager.pieces.flatMap { $0 }.firstIndex { $0.id == model.id }
+                    if let index = index {
+                        let x = index % 8
+                        let y = 7 - index / 8
+                        let position = BoardIndex(x: x, y: y)
                         let pieceItem = piecesManager.getPiece(at: position)
                         let isPossibleMove = piecesManager.selectedPiecePossibleMovements.contains { $0.to == position }
                         EquatableView(
@@ -58,6 +66,7 @@ struct PiecesLayer: View {
                                 movePiece(from: selectedPieceIndex, to: position)
                             }
                         )
+                        .frame(width: size, height: size)
                     }
                 }
             }
