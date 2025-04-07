@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct Board: View {
+    var reversed: Bool = false
     var onBoardCellSelected: ((BoardIndex) -> Void)?
     
     var body: some View {
+        
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 ForEach((0..<8).reversed(), id: \.self) { yIndex in
@@ -19,6 +21,7 @@ struct Board: View {
                             let currentIndex = BoardIndex(x: xIndex, y: yIndex)
                             BoardCell(
                                 cellIndex: currentIndex,
+                                inReversedBoard: reversed,
                                 onBoardCellSelected: onBoardCellSelected
                             ).frame(
                                 width: geometry.size.width / 8.0,
@@ -32,6 +35,7 @@ struct Board: View {
         .aspectRatio(1, contentMode: .fit)
         .padding(5)
         .border(.blue, width: 5)
+        .rotationEffect(reversed ? .degrees(180) : .degrees(0))
     }
 }
 

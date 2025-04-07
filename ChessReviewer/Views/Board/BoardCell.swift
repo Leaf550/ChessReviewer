@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BoardCell: View {
     let cellIndex: BoardIndex
+    var inReversedBoard: Bool = false
     
     var color: Color {
         (cellIndex.yIndex + cellIndex.xIndex) % 2 == 0 ? .blue : Color(hex: "#C7DEFF")
@@ -30,9 +31,10 @@ struct BoardCell: View {
                         HStack {
                             Text(cellIndex.getYPosition())
                                 .foregroundColor(.white)
-                                .padding([.leading], 4)
+                                .padding([.leading, .trailing], 4)
                                 .padding([.top], 2)
                                 .font(.footnote)
+                                .rotationEffect(inReversedBoard ? .degrees(180) : .degrees(0))
                             Spacer()
                         }
                     }
@@ -44,9 +46,10 @@ struct BoardCell: View {
                             Spacer()
                             Text(cellIndex.getXPosition())
                                 .foregroundColor(.white)
-                                .padding([.trailing], 4)
+                                .padding([.leading, .trailing], 4)
                                 .padding([.bottom], 2)
                                 .font(.footnote)
+                                .rotationEffect(inReversedBoard ? .degrees(180) : .degrees(0))
                         }
                     }
                 }

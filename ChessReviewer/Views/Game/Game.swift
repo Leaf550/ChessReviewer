@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Game: View {
     @StateObject private var piecesManager = PiecesManager()
+    @State var boardReversed: Bool = false
     
     var body: some View {
         VStack {
@@ -21,29 +22,18 @@ struct Game: View {
             .frame(height: 20)
             .padding([.leading, .trailing], 20)
             ZStack {
-                Board() { _ in 
+                Board(reversed: boardReversed) { _ in
                     piecesManager.selectedPieceIndex = nil
                 }
-                PiecesLayer(piecesManager: piecesManager)
+                PiecesLayer(piecesManager: piecesManager, onReversedBoard: boardReversed)
             }
             .padding()
-        }
-        .alert("升变！", isPresented: $piecesManager.showPromotionAlert) {
-            Button("车", role: .none) {
-                guard let promotionSide = piecesManager.promotionSide else { return }
-                piecesManager.promotion(to: .r(promotionSide))
-            }
-            Button("马", role: .none) {
-                guard let promotionSide = piecesManager.promotionSide else { return }
-                piecesManager.promotion(to: .n(promotionSide))
-            }
-            Button("象", role: .none) {
-                guard let promotionSide = piecesManager.promotionSide else { return }
-                piecesManager.promotion(to: .b(promotionSide))
-            }
-            Button("后", role: .none) {
-                guard let promotionSide = piecesManager.promotionSide else { return }
-                piecesManager.promotion(to: .q(promotionSide))
+            HStack {
+                Button {
+                    boardReversed.toggle()
+                } label: {
+                    Text("翻转棋盘")
+                }
             }
         }
     }

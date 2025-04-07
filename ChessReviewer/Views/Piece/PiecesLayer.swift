@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PiecesLayer: View {
     @ObservedObject var piecesManager: PiecesManager
+    var onReversedBoard: Bool = false
     
     private var isPiecesLegal: Bool {
         piecesManager.pieces.count == 8 && piecesManager.pieces.allSatisfy({ $0.count <= 8 })
@@ -32,6 +33,25 @@ struct PiecesLayer: View {
             piecesGrid()
                 .aspectRatio(1, contentMode: .fit)
                 .padding(5)
+                .rotationEffect(onReversedBoard ? .degrees(180) : .degrees(0))
+                .alert("升变！", isPresented: $piecesManager.showPromotionAlert) {
+                    Button("车", role: .none) {
+                        guard let promotionSide = piecesManager.promotionSide else { return }
+                        piecesManager.promotion(to: .r(promotionSide))
+                    }
+                    Button("马", role: .none) {
+                        guard let promotionSide = piecesManager.promotionSide else { return }
+                        piecesManager.promotion(to: .n(promotionSide))
+                    }
+                    Button("象", role: .none) {
+                        guard let promotionSide = piecesManager.promotionSide else { return }
+                        piecesManager.promotion(to: .b(promotionSide))
+                    }
+                    Button("后", role: .none) {
+                        guard let promotionSide = piecesManager.promotionSide else { return }
+                        piecesManager.promotion(to: .q(promotionSide))
+                    }
+                }
         } else {
             errorView
         }
@@ -67,6 +87,7 @@ struct PiecesLayer: View {
                             }
                         )
                         .frame(width: size, height: size)
+                        .rotationEffect(onReversedBoard ? .degrees(180) : .degrees(0))
                     }
                 }
             }
