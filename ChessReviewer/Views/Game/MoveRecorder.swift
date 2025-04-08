@@ -43,6 +43,7 @@ class Move {
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
+    var promotion: PieceViewItem?
     var gameStatus: GameStatus
     var currentPiecesLayout: [[PieceViewModel]]
     
@@ -81,7 +82,9 @@ class MoveRecorder: ObservableObject {
                 movesInRound = []
             }
             
-            movesInRound.insert((ptr?.origin.toPositionStr() ?? "") + (ptr?.target.toPositionStr() ?? ""), at: 0)
+            let currentTurnMove = (ptr?.origin.toPositionStr() ?? "") + (ptr?.target.toPositionStr() ?? "") + (ptr?.promotion?.pieceNotation ?? "").lowercased()
+            
+            movesInRound.insert(currentTurnMove, at: 0)
             
             ptr = ptr?.previous
             lastRound = currentRound

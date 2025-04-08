@@ -236,6 +236,8 @@ extension PiecesManager {
         
         toggleCheckStatus(for: currentSide)
         
+        moveRecorder.currentMove?.promotion = piece
+        
         self.promotionPosition = nil
         promotionSide = nil
     }
