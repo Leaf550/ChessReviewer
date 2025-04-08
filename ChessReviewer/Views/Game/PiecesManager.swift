@@ -246,11 +246,13 @@ extension PiecesManager {
             in: pieces
         ) {
             sideInCheck = side
+            moveRecorder.currentMove?.gameStatus.sideInCheck = side
             if CheckChecker.isCheckmate(
                 for: side,
                 in: pieces
             ) {
                 sideInCheckmate = side
+                moveRecorder.currentMove?.gameStatus.sideInCheckmate = side
             }
         }
     }
