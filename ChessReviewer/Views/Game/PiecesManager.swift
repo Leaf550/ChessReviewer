@@ -19,7 +19,6 @@ struct PieceViewModel: Identifiable {
 
 class PiecesManager: ObservableObject {
     @Published var moveRecorder: MoveRecorder = MoveRecorder()
-    var currentMove: Move?
     
     var currentSide = PieceViewItem.PieceSide.white
     var currentTurn = 1
@@ -209,21 +208,19 @@ extension PiecesManager {
         toggleCheckStatus(for: checkingCheckSide)
         
         let newMove = Move(
-            previous: currentMove,
-            turn: currentTurn,
-            round: currentRound,
+            previous: moveRecorder.currentMove,
             from: originIndex,
             to: targetIndex,
             gameStatus: currentGameStatus,
             currentPiecesLayout: pieces
         )
         
-        if currentMove == nil {
-            currentMove = newMove
-            moveRecorder.timeline = currentMove
+        if moveRecorder.currentMove == nil {
+            moveRecorder.currentMove = newMove
+            moveRecorder.timeline = moveRecorder.currentMove
         } else {
-            currentMove?.next = newMove
-            currentMove = currentMove?.next
+            moveRecorder.currentMove?.next = newMove
+            moveRecorder.currentMove = moveRecorder.currentMove?.next
         }
         
         if currentSide == PieceViewItem.PieceSide.black {

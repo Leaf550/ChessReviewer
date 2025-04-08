@@ -37,22 +37,18 @@ struct GameStatus {
     }
 }
 
-class Move {
+class Move: ObservableObject {
     var next: Move?
     var previous: Move?
-    var turn: Int
-    var round: Int
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
-    var gameStatus: GameStatus
+    @Published var gameStatus: GameStatus
     var currentPiecesLayout: [[PieceViewModel]]
     
     init(
         next: Move? = nil,
         previous: Move? = nil,
-        turn: Int,
-        round: Int,
         from origin: BoardIndex,
         to target: BoardIndex,
         gameStatus: GameStatus,
@@ -60,8 +56,6 @@ class Move {
     ) {
         self.next = next
         self.previous = previous
-        self.turn = turn
-        self.round = round
         self.origin = origin
         self.target = target
         self.gameStatus = gameStatus
@@ -71,44 +65,36 @@ class Move {
 
 class MoveRecorder: ObservableObject {
     @Published var timeline: Move?
+    var currentMove: Move?
     
     var mainBranchRoundsArray: [String] {
-        guard let start = timeline else { return [] }
+        var res: [String] = []
+        var ptr = currentMove
         
-        var cur: Move? = start
-        var currentRound: [String] = []
-        var rounds: [String] = []
-        
-        while let move = cur {
-            if move.round == move.previous?.round ?? 1 {
-                currentRound.append(move.origin.toPositionStr() + move.target.toPositionStr())
-            } else {
-                rounds.append(currentRound.joined(separator: " "))
-                currentRound = [move.origin.toPositionStr() + move.target.toPositionStr()]
+        var lastRound = ptr?.gameStatus.currentRound
+        var movesInRound: [String] = []
+        while ptr != nil {
+            let currentRound = ptr?.gameStatus.currentRound
+            
+            if currentRound != lastRound {
+                res.insert(movesInRound.joined(separator: " "), at: 0)
+                movesInRound = []
             }
-            cur = cur?.next
+            
+            movesInRound.insert((ptr?.origin.toPositionStr() ?? "") + (ptr?.target.toPositionStr() ?? ""), at: 0)
+            
+            ptr = ptr?.previous
+            lastRound = currentRound
         }
         
-        if currentRound.count != 0 {
-            rounds.append(currentRound.joined(separator: " "))
+        if movesInRound.count != 0 {
+            res.insert(movesInRound.joined(separator: " "), at: 0)
         }
         
-        return rounds
-    }
-    
-    var mainBranchMovesArray: [String] {
-        var moves: [String] = []
-        var cur: Move? = timeline
-        
-        while let move = cur {
-            moves.append(move.origin.toPositionStr() + move.target.toPositionStr())
-            cur = move.next
-        }
-        
-        return moves
+        return res
     }
     
     var mainBranchMovesString: String {
-        return mainBranchMovesArray.joined(separator: " ")
+        mainBranchRoundsArray.joined(separator: " ")
     }
 }
