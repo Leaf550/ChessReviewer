@@ -43,6 +43,7 @@ class Move {
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
+    var piece: PieceViewItem
     var promotion: PieceViewItem?
     var gameStatus: GameStatus
     var currentPiecesLayout: [[PieceViewModel]]
@@ -52,6 +53,7 @@ class Move {
         previous: Move? = nil,
         from origin: BoardIndex,
         to target: BoardIndex,
+        piece: PieceViewItem,
         gameStatus: GameStatus,
         currentPiecesLayout: [[PieceViewModel]]
     ) {
@@ -59,6 +61,7 @@ class Move {
         self.previous = previous
         self.origin = origin
         self.target = target
+        self.piece = piece
         self.gameStatus = gameStatus
         self.currentPiecesLayout = currentPiecesLayout
     }

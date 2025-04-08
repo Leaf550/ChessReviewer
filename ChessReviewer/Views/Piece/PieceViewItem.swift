@@ -11,6 +11,10 @@ enum PieceViewItem: Equatable {
     enum PieceSide: String {
         case white = "white"
         case black = "black"
+        
+        var opponent: PieceSide {
+            self == .white ? .black : .white
+        }
     }
     
     case p(PieceSide)

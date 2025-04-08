@@ -68,8 +68,10 @@ class PiecesManager: ObservableObject {
         guard let selectedPieceIndex = selectedPieceIndex else { return [] }
         guard let selectedPiece = selectedPiece  else { return [] }
         
+        var res: [PossibbleMovement] = []
+        
         if currentSide == .white {
-            return selectedPiece.movementRule.possibleMoves(
+            res = selectedPiece.movementRule.possibleMoves(
                 at: selectedPieceIndex,
                 in: pieces,
                 canShortCastaling: canWhiteShortCastling,
@@ -77,7 +79,7 @@ class PiecesManager: ObservableObject {
                 threateningCheck: false
             )
         } else {
-            return selectedPiece.movementRule.possibleMoves(
+            res = selectedPiece.movementRule.possibleMoves(
                 at: selectedPieceIndex,
                 in: pieces,
                 canShortCastaling: canBlackShortCastling,
@@ -85,6 +87,27 @@ class PiecesManager: ObservableObject {
                 threateningCheck: false
             )
         }
+        
+        guard let lastMove = moveRecorder.currentMove else { return res }
+        
+        switch selectedPiece {
+            case .p(let side):
+                let enPassantLine = side == .white ? 4 : 3
+                let enPassentTargetLine = side == .white ? 5 : 2
+                let opponentPawnStartLine = side.opponent == .white ? 1 : 6
+                guard selectedPieceIndex.yIndex == enPassantLine else { break }
+                guard lastMove.piece == .p(side.opponent) else { break }
+                guard lastMove.origin.yIndex == opponentPawnStartLine else { break }
+                guard lastMove.target.yIndex == enPassantLine else { break }
+                guard lastMove.target.xIndex == selectedPieceIndex.xIndex + 1 || lastMove.target.xIndex == selectedPieceIndex.xIndex - 1 else { break }
+                res.append(
+                    PossibbleMovement(to: BoardIndex(x: lastMove.target.xIndex, y: enPassentTargetLine), enPassant: true)
+                )
+            default:
+                break
+        }
+        
+        return res
     }
     
     var currentGameStatus: GameStatus {
@@ -169,7 +192,8 @@ extension PiecesManager {
         from originIndex: BoardIndex,
         to targetIndex: BoardIndex,
         isShortCastaling: Bool = false,
-        isLongCastling: Bool = false
+        isLongCastling: Bool = false,
+        enPassant: Bool = false
     ) {
         guard (0...7).contains(originIndex.xIndex),
               (0...7).contains(originIndex.yIndex),
@@ -198,6 +222,14 @@ extension PiecesManager {
             showPromotionAlert.toggle()
         }
         
+        if enPassant {
+            let opponentPawnYIndex = currentSide == .white ? targetIndex.yIndex - 1 : targetIndex.yIndex + 1
+            let opponentPawnPosition = BoardIndex(x: targetIndex.xIndex, y: opponentPawnYIndex)
+            withAnimation(.easeOut(duration: 0.15)) {
+                pieces[7 - opponentPawnPosition.yIndex][opponentPawnPosition.xIndex] = PieceViewModel(.none)
+            }
+        }
+        
         toggleCastlingCondition(movedPiece: originPiece.item, originPosition: originIndex)
         
         if currentSide == sideInCheck {
@@ -211,6 +243,7 @@ extension PiecesManager {
             previous: moveRecorder.currentMove,
             from: originIndex,
             to: targetIndex,
+            piece: originPiece.item,
             gameStatus: currentGameStatus,
             currentPiecesLayout: pieces
         )

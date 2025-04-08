@@ -24,7 +24,8 @@ struct PiecesLayer: View {
             from: originIndex,
             to: targetMovement.to,
             isShortCastaling: targetMovement.shortCastaling,
-            isLongCastling: targetMovement.longCastaling
+            isLongCastling: targetMovement.longCastaling,
+            enPassant: targetMovement.enPassant
         )
     }
     

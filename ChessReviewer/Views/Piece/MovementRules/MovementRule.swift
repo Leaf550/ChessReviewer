@@ -12,6 +12,7 @@ struct PossibbleMovement {
     var take: PieceViewItem? = nil
     var shortCastaling: Bool = false
     var longCastaling: Bool = false
+    var enPassant: Bool = false
 }
 
 protocol MovementRule {
