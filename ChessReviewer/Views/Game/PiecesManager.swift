@@ -53,8 +53,8 @@ class PiecesManager: ObservableObject {
     }
     
     @Published var showPromotionAlert = false
-    var promotionPosition: BoardIndex?
     var promotionSide: PieceViewItem.PieceSide?
+    private var promotionPosition: BoardIndex?
     
     @Published var selectedPieceIndex: BoardIndex?
     
@@ -86,6 +86,22 @@ class PiecesManager: ObservableObject {
                 threateningCheck: false
             )
         }
+    }
+    
+    var currentGameStatus: GameStatus {
+        GameStatus(
+            currentSide: currentSide,
+            currentTurn: currentTurn,
+            currentRound: currentRound,
+            sideInCheck: sideInCheck,
+            sideInCheckmate: sideInCheckmate,
+            blackARookMoved: blackARookMoved,
+            blackHRookMoved: blackHRookMoved,
+            blackKingMoved: blackKingMoved,
+            whiteARookMoved: whiteARookMoved,
+            whiteHRookMoved: whiteHRookMoved,
+            whiteKingMoved: whiteKingMoved
+        )
     }
     
     @Published var pieces: [[PieceViewModel]] = [
@@ -198,7 +214,7 @@ extension PiecesManager {
             round: currentRound,
             from: originIndex,
             to: targetIndex,
-            side: currentSide,
+            gameStatus: currentGameStatus,
             currentPiecesLayout: pieces
         )
         

@@ -7,6 +7,36 @@
 
 import Foundation
 
+struct GameStatus {
+    var currentSide: PieceViewItem.PieceSide
+    var currentTurn: Int
+    var currentRound: Int
+    var sideInCheck: PieceViewItem.PieceSide?
+    var sideInCheckmate: PieceViewItem.PieceSide?
+    var blackARookMoved: Bool
+    var blackHRookMoved: Bool
+    var blackKingMoved: Bool
+    var whiteARookMoved: Bool
+    var whiteHRookMoved: Bool
+    var whiteKingMoved: Bool
+    
+    static func empty() -> GameStatus {
+        return GameStatus(
+            currentSide: .white,
+            currentTurn: 1,
+            currentRound: 1,
+            sideInCheck: nil,
+            sideInCheckmate: nil,
+            blackARookMoved: false,
+            blackHRookMoved: false,
+            blackKingMoved: false,
+            whiteARookMoved: false,
+            whiteHRookMoved: false,
+            whiteKingMoved: false
+        )
+    }
+}
+
 class Move {
     var next: Move?
     var previous: Move?
@@ -15,7 +45,7 @@ class Move {
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
-    var side: PieceViewItem.PieceSide
+    var gameStatus: GameStatus
     var currentPiecesLayout: [[PieceViewModel]]
     
     init(
@@ -25,7 +55,7 @@ class Move {
         round: Int,
         from origin: BoardIndex,
         to target: BoardIndex,
-        side: PieceViewItem.PieceSide,
+        gameStatus: GameStatus,
         currentPiecesLayout: [[PieceViewModel]]
     ) {
         self.next = next
@@ -34,7 +64,7 @@ class Move {
         self.round = round
         self.origin = origin
         self.target = target
-        self.side = side
+        self.gameStatus = gameStatus
         self.currentPiecesLayout = currentPiecesLayout
     }
 }
