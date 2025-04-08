@@ -198,9 +198,12 @@ extension PiecesManager {
         guard (0...7).contains(originIndex.xIndex),
               (0...7).contains(originIndex.yIndex),
               (0...7).contains(targetIndex.xIndex),
-              (0...7).contains(targetIndex.yIndex) else {
-            return
-        }
+              (0...7).contains(targetIndex.yIndex) else { return }
+        
+        let isShortCastaling = moveIsShortCastaling(from: originIndex, to: targetIndex)
+        let isLongCastling = moveIsLongCastaling(from: originIndex, to: targetIndex)
+        let enPassant = moveIsEnPassant(from: originIndex, to: targetIndex)
+        
         let originPiece = pieces[7 - originIndex.yIndex][originIndex.xIndex]
         var targetPiece = pieces[7 - targetIndex.yIndex][targetIndex.xIndex]
         if targetPiece.item != .none {
@@ -273,6 +276,73 @@ extension PiecesManager {
         
         self.promotionPosition = nil
         promotionSide = nil
+    }
+    
+    private func moveIsShortCastaling(
+        from originIndex: BoardIndex,
+        to targetIndex: BoardIndex
+    ) -> Bool {
+        guard (0...7).contains(originIndex.xIndex),
+              (0...7).contains(originIndex.yIndex),
+              (0...7).contains(targetIndex.xIndex),
+              (0...7).contains(targetIndex.yIndex) else { return false }
+        let originPiece = pieces[7 - originIndex.yIndex][originIndex.xIndex]
+        let xDistance = targetIndex.xIndex - originIndex.xIndex
+        switch originPiece.item {
+            case .k(_):
+                if xDistance == 2 {
+                    return true
+                }
+            default:
+                break
+        }
+        
+        return false
+    }
+    
+    private func moveIsLongCastaling(
+        from originIndex: BoardIndex,
+        to targetIndex: BoardIndex
+    ) -> Bool {
+        guard (0...7).contains(originIndex.xIndex),
+              (0...7).contains(originIndex.yIndex),
+              (0...7).contains(targetIndex.xIndex),
+              (0...7).contains(targetIndex.yIndex) else { return false }
+        let originPiece = pieces[7 - originIndex.yIndex][originIndex.xIndex]
+        let xDistance = targetIndex.xIndex - originIndex.xIndex
+        switch originPiece.item {
+            case .k(_):
+                if xDistance == -2 {
+                    return true
+                }
+            default:
+                break
+        }
+        
+        return false
+    }
+    
+    private func moveIsEnPassant(
+        from originIndex: BoardIndex,
+        to targetIndex: BoardIndex
+    ) -> Bool {
+        guard (0...7).contains(originIndex.xIndex),
+              (0...7).contains(originIndex.yIndex),
+              (0...7).contains(targetIndex.xIndex),
+              (0...7).contains(targetIndex.yIndex) else { return false }
+        let originPiece = pieces[7 - originIndex.yIndex][originIndex.xIndex]
+        let targetPiece = pieces[7 - targetIndex.yIndex][targetIndex.xIndex]
+        let xDistance = targetIndex.xIndex - originIndex.xIndex
+        switch originPiece.item {
+            case .p(_):
+                if xDistance != 0 && targetPiece.item == .none {
+                    return true
+                }
+            default:
+                break
+        }
+        
+        return false
     }
     
     private func toggleCheckStatus(for side: PieceViewItem.PieceSide) {

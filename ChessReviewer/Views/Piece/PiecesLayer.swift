@@ -22,10 +22,7 @@ struct PiecesLayer: View {
         
         piecesManager.movePiece(
             from: originIndex,
-            to: targetMovement.to,
-            isShortCastaling: targetMovement.shortCastaling,
-            isLongCastling: targetMovement.longCastaling,
-            enPassant: targetMovement.enPassant
+            to: targetMovement.to
         )
     }
     

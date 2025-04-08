@@ -30,7 +30,7 @@ struct MainBranchHistoryButtons: View {
                 }
             }
             .onChange(of: piecesManager.moveRecorder.mainBranchMovesString) { _ in
-                DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                     withAnimation() {
                         scrollProxy.scrollTo("trailing", anchor: .trailing)
                     }
