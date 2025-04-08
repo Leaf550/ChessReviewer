@@ -88,23 +88,8 @@ class PiecesManager: ObservableObject {
             )
         }
         
-        guard let lastMove = moveRecorder.currentMove else { return res }
-        
-        switch selectedPiece {
-            case .p(let side):
-                let enPassantLine = side == .white ? 4 : 3
-                let enPassentTargetLine = side == .white ? 5 : 2
-                let opponentPawnStartLine = side.opponent == .white ? 1 : 6
-                guard selectedPieceIndex.yIndex == enPassantLine else { break }
-                guard lastMove.piece == .p(side.opponent) else { break }
-                guard lastMove.origin.yIndex == opponentPawnStartLine else { break }
-                guard lastMove.target.yIndex == enPassantLine else { break }
-                guard lastMove.target.xIndex == selectedPieceIndex.xIndex + 1 || lastMove.target.xIndex == selectedPieceIndex.xIndex - 1 else { break }
-                res.append(
-                    PossibbleMovement(to: BoardIndex(x: lastMove.target.xIndex, y: enPassentTargetLine), enPassant: true)
-                )
-            default:
-                break
+        if let enPassantMove = enPassantMoveTarget() {
+            res.append(PossibbleMovement(to: enPassantMove, enPassant: true))
         }
         
         return res
@@ -343,6 +328,29 @@ extension PiecesManager {
         }
         
         return false
+    }
+    
+    private func enPassantMoveTarget() -> BoardIndex? {
+        guard let selectedPieceIndex = selectedPieceIndex else { return nil }
+        guard let selectedPiece = selectedPiece  else { return nil }
+        guard let lastMove = moveRecorder.currentMove else { return nil }
+        
+        switch selectedPiece {
+            case .p(let side):
+                let enPassantLine = side == .white ? 4 : 3
+                let enPassentTargetLine = side == .white ? 5 : 2
+                let opponentPawnStartLine = side.opponent == .white ? 1 : 6
+                guard selectedPieceIndex.yIndex == enPassantLine else { break }
+                guard lastMove.piece == .p(side.opponent) else { break }
+                guard lastMove.origin.yIndex == opponentPawnStartLine else { break }
+                guard lastMove.target.yIndex == enPassantLine else { break }
+                guard lastMove.target.xIndex == selectedPieceIndex.xIndex + 1 || lastMove.target.xIndex == selectedPieceIndex.xIndex - 1 else { break }
+                return BoardIndex(x: lastMove.target.xIndex, y: enPassentTargetLine)
+            default:
+                break
+        }
+        
+        return nil
     }
     
     private func toggleCheckStatus(for side: PieceViewItem.PieceSide) {

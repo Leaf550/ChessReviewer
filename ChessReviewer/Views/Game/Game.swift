@@ -29,6 +29,11 @@ struct Game: View {
                 } label: {
                     Text("翻转棋盘")
                 }
+                Button {
+                    print(piecesManager.moveRecorder.mainBranchMovesString)
+                } label: {
+                    Text("打印棋谱")
+                }
             }
         }
     }
