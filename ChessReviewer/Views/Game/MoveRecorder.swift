@@ -37,13 +37,13 @@ struct GameStatus {
     }
 }
 
-class Move: ObservableObject {
+class Move {
     var next: Move?
     var previous: Move?
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
-    @Published var gameStatus: GameStatus
+    var gameStatus: GameStatus
     var currentPiecesLayout: [[PieceViewModel]]
     
     init(
