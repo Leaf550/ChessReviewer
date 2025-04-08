@@ -16,6 +16,7 @@ struct Game: View {
             Text(getCheckTitle())
                 .frame(height: 20)
             MainBranchHistoryButtons(piecesManager: piecesManager)
+            Text(piecesManager.moveRecorder.currentMove?.fen ?? "")
             ZStack {
                 Board(reversed: boardReversed) { _ in
                     piecesManager.selectedPieceIndex = nil
@@ -30,7 +31,7 @@ struct Game: View {
                     Text("翻转棋盘")
                 }
                 Button {
-                    print(piecesManager.moveRecorder.mainBranchMovesString)
+                    print("position startpos moves " + piecesManager.moveRecorder.mainBranchMovesString)
                 } label: {
                     Text("打印棋谱")
                 }

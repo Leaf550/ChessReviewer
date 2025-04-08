@@ -73,7 +73,7 @@ extension PieceViewItem {
             case .b(_): return  "bishop"
             case .q(_): return  "queen"
             case .k(_): return  "king"
-            case .none: return ""
+            case .none: return  ""
         }
     }
     

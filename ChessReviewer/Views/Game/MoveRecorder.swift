@@ -46,6 +46,7 @@ class Move {
     var piece: PieceViewItem
     var promotion: PieceViewItem?
     var gameStatus: GameStatus
+    var fen: String
     var currentPiecesLayout: [[PieceViewModel]]
     
     init(
@@ -55,6 +56,7 @@ class Move {
         to target: BoardIndex,
         piece: PieceViewItem,
         gameStatus: GameStatus,
+        fen: String,
         currentPiecesLayout: [[PieceViewModel]]
     ) {
         self.next = next
@@ -63,6 +65,7 @@ class Move {
         self.target = target
         self.piece = piece
         self.gameStatus = gameStatus
+        self.fen = fen
         self.currentPiecesLayout = currentPiecesLayout
     }
 }

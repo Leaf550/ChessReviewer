@@ -88,7 +88,7 @@ class PiecesManager: ObservableObject {
             )
         }
         
-        if let enPassantMove = enPassantMoveTarget() {
+        if let enPassantMove = enPassantMoveTarget(for: selectedPiece, at: selectedPieceIndex) {
             res.append(PossibbleMovement(to: enPassantMove, enPassant: true))
         }
         
@@ -162,6 +162,77 @@ class PiecesManager: ObservableObject {
         ],
     ]
     
+    var currentFEN: String {
+        var res = ""
+        var enPassantTarget: String? = nil
+        var foundEnPassantTarget = false
+        for (rowIndex, row) in pieces.enumerated() {
+            var blankCount = 0
+            for (columnIndex, piece) in row.enumerated() {
+                switch piece.item {
+                    case .none:
+                        blankCount += 1
+                    default:
+                        if blankCount != 0 {
+                            res += "\(blankCount)"
+                        }
+                        blankCount = 0
+                        res += piece.item.pieceNotation
+                        
+                        if !foundEnPassantTarget {
+                            switch piece.item {
+                                case .p(_):
+                                    enPassantTarget = enPassantMoveTarget(for: piece.item, at: BoardIndex(x: columnIndex, y: 7 - rowIndex))?.toPositionStr()
+                                    foundEnPassantTarget = enPassantTarget != nil
+                                default:
+                                    break
+                            }
+                        }
+                }
+            }
+            if blankCount != 0 {
+                res += "\(blankCount)"
+            }
+            if rowIndex != 7 {
+                res += "/"
+            }
+        }
+        
+        res += " "
+        res += currentSide == .white ? "w" : "b"
+        
+        res += " "
+        if !canWhiteShortCastling
+            && !canWhiteLongCastling
+            && !canBlackShortCastling
+            && !canBlackLongCastling {
+            res += "-"
+        } else {
+            if canWhiteShortCastling {
+                res += "K"
+            }
+            if canWhiteLongCastling {
+                res += "Q"
+            }
+            if canBlackShortCastling {
+                res += "k"
+            }
+            if canBlackLongCastling {
+                res += "q"
+            }
+        }
+        
+        res += " "
+        res += "\(enPassantTarget ?? "-")"
+            
+        
+        res += " "
+        res += "-"
+        
+        res += " \(currentSide == .white ? currentRound : currentRound + 1)"
+        
+        return res
+    }
 }
 
 extension PiecesManager {
@@ -233,6 +304,7 @@ extension PiecesManager {
             to: targetIndex,
             piece: originPiece.item,
             gameStatus: currentGameStatus,
+            fen: "",
             currentPiecesLayout: pieces
         )
         
@@ -244,11 +316,13 @@ extension PiecesManager {
             moveRecorder.currentMove = moveRecorder.currentMove?.next
         }
         
+        moveRecorder.currentMove?.fen = currentFEN
+        
         if currentSide == PieceViewItem.PieceSide.black {
             currentRound += 1
         }
-        currentSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
         currentTurn += 1
+        currentSide = currentSide.opponent
     }
     
     func promotion(to piece: PieceViewItem) {
@@ -330,21 +404,19 @@ extension PiecesManager {
         return false
     }
     
-    private func enPassantMoveTarget() -> BoardIndex? {
-        guard let selectedPieceIndex = selectedPieceIndex else { return nil }
-        guard let selectedPiece = selectedPiece  else { return nil }
+    private func enPassantMoveTarget(for piece: PieceViewItem, at boardIndex: BoardIndex) -> BoardIndex? {
         guard let lastMove = moveRecorder.currentMove else { return nil }
         
-        switch selectedPiece {
+        switch piece {
             case .p(let side):
                 let enPassantLine = side == .white ? 4 : 3
                 let enPassentTargetLine = side == .white ? 5 : 2
                 let opponentPawnStartLine = side.opponent == .white ? 1 : 6
-                guard selectedPieceIndex.yIndex == enPassantLine else { break }
+                guard boardIndex.yIndex == enPassantLine else { break }
                 guard lastMove.piece == .p(side.opponent) else { break }
                 guard lastMove.origin.yIndex == opponentPawnStartLine else { break }
                 guard lastMove.target.yIndex == enPassantLine else { break }
-                guard lastMove.target.xIndex == selectedPieceIndex.xIndex + 1 || lastMove.target.xIndex == selectedPieceIndex.xIndex - 1 else { break }
+                guard lastMove.target.xIndex == boardIndex.xIndex + 1 || lastMove.target.xIndex == boardIndex.xIndex - 1 else { break }
                 return BoardIndex(x: lastMove.target.xIndex, y: enPassentTargetLine)
             default:
                 break
