@@ -17,6 +17,7 @@ struct Game: View {
                 .frame(height: 20)
             MainBranchHistoryButtons(piecesManager: piecesManager)
             Text(piecesManager.moveRecorder.currentMove?.fen ?? piecesManager.currentFEN)
+                .textSelection(.enabled)
             ZStack {
                 Board(reversed: boardReversed) { _ in
                     piecesManager.selectedPieceIndex = nil
