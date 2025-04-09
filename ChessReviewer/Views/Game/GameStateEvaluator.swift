@@ -39,26 +39,23 @@ struct GameStateEvaluator {
     }
     
     static func isCheckmate(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewModel]]) -> Bool {
-        for (yIndex, piecesInRow) in piecesLayer.reversed().enumerated() {
-            for (xIndex, piece) in piecesInRow.enumerated() {
-                if piece.item.side != side {
-                    continue
-                }
-                
-                let possibleMovements = piece.item.movementRule.possibleMoves(
-                    at: BoardIndex(x: xIndex, y: yIndex),
-                    in: piecesLayer,
-                    canShortCastaling: false,
-                    canLongCastaling: false,
-                    threateningCheck: false
-                )
-                if possibleMovements.count != 0 {
-                    return false
-                }
-            }
+        guard isInCheck(for: side, in: piecesLayer) else { return false }
+        
+        if getAllPieceMovementsCount(for: side, in: piecesLayer) == 0 {
+            return true
         }
         
-        return true
+        return false
+    }
+    
+    static func isStalemate(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewModel]]) -> Bool {
+        guard !isInCheck(for: side, in: piecesLayer) else { return false }
+        
+        if getAllPieceMovementsCount(for: side, in: piecesLayer) == 0 {
+            return true
+        }
+        
+        return false
     }
     
     static func willLeadToCheckedIf(
@@ -93,5 +90,28 @@ struct GameStateEvaluator {
             return .none
         }
         return piecesLayer[7 - possition.yIndex][possition.xIndex].item
+    }
+    
+    private static func getAllPieceMovementsCount(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewModel]]) -> Int {
+        var res = 0
+        
+        for (yIndex, piecesInRow) in piecesLayer.reversed().enumerated() {
+            for (xIndex, piece) in piecesInRow.enumerated() {
+                if piece.item.side != side {
+                    continue
+                }
+                
+                let possibleMovements = piece.item.movementRule.possibleMoves(
+                    at: BoardIndex(x: xIndex, y: yIndex),
+                    in: piecesLayer,
+                    canShortCastaling: false,
+                    canLongCastaling: false,
+                    threateningCheck: false
+                )
+                res += possibleMovements.count
+            }
+        }
+        
+        return res
     }
 }

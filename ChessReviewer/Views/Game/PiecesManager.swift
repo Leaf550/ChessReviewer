@@ -27,6 +27,7 @@ class PiecesManager: ObservableObject {
     
     @Published var sideInCheck: PieceViewItem.PieceSide?
     @Published var sideInCheckmate: PieceViewItem.PieceSide?
+    @Published var sideInStalemate: PieceViewItem.PieceSide?
     
     var blackARookMoved: Bool = false
     var blackHRookMoved: Bool = false
@@ -325,8 +326,10 @@ extension PiecesManager {
         }
         
         // toggle checking status
-        let checkingCheckSide: PieceViewItem.PieceSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
-        toggleCheckStatus(for: checkingCheckSide)
+        toggleCheckStatus(for: currentSide.opponent)
+        
+        // toggle stalemate status
+        toggleStalemateStatus(for: currentSide.opponent)
         
         // record move
         let newMove = Move(
@@ -474,9 +477,12 @@ extension PiecesManager {
                 in: pieces
             ) {
                 sideInCheckmate = side
-                moveRecorder.currentMove?.gameStatus.sideInCheckmate = side
             }
         }
+    }
+    
+    private func toggleStalemateStatus(for side: PieceViewItem.PieceSide) {
+        sideInStalemate = GameStateEvaluator.isStalemate(for: side, in: pieces) ? side : nil
     }
     
     private func moveCastalingRook(

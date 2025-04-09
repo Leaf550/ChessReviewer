@@ -13,7 +13,7 @@ struct Game: View {
     
     var body: some View {
         VStack {
-            Text(getCheckTitle())
+            Text(getGameState())
                 .frame(height: 20)
             MainBranchHistoryButtons(piecesManager: piecesManager)
             Text(piecesManager.moveRecorder.currentMove?.fen ?? piecesManager.currentFEN)
@@ -40,11 +40,13 @@ struct Game: View {
         }
     }
     
-    private func getCheckTitle() -> String {
+    private func getGameState() -> String {
         if let sideInCheckmate = piecesManager.sideInCheckmate {
             return "Checkmate to \(sideInCheckmate == .white ? "white" : "black")!"
         } else if let sideInCheck = piecesManager.sideInCheck {
             return "Check to \(sideInCheck == .white ? "white" : "black")!"
+        } else if let sideInStalemate = piecesManager.sideInStalemate {
+            return "Stalemate to \(sideInStalemate == .white ? "white" : "black")!"
         }
         return ""
     }
