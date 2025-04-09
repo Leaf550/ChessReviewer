@@ -36,19 +36,31 @@ class PiecesManager: ObservableObject {
     var whiteKingMoved: Bool = false
     
     var canWhiteShortCastling: Bool {
-        sideInCheck != .white && !whiteHRookMoved && !whiteKingMoved
+        sideInCheck != .white
+        && !whiteHRookMoved
+        && !whiteKingMoved
+        && getPiece(at: BoardIndex(x: 7, y: 0)) == .r(.white)
     }
     
     var canWhiteLongCastling: Bool {
-        sideInCheck != .white && !whiteARookMoved && !whiteKingMoved
+        sideInCheck != .white
+        && !whiteARookMoved
+        && !whiteKingMoved
+        && getPiece(at: BoardIndex(x: 0, y: 0)) == .r(.white)
     }
     
     var canBlackShortCastling: Bool {
-        sideInCheck != .black && !blackHRookMoved && !blackKingMoved
+        sideInCheck != .black
+        && !blackHRookMoved
+        && !blackKingMoved
+        && getPiece(at: BoardIndex(x: 7, y: 7)) == .r(.black)
     }
     
     var canBlackLongCastling: Bool {
-        sideInCheck != .black && !blackARookMoved && !blackKingMoved
+        sideInCheck != .black
+        && !blackARookMoved
+        && !blackKingMoved
+        && getPiece(at: BoardIndex(x: 0, y: 7)) == .r(.black)
     }
     
     @Published var showPromotionAlert = false
