@@ -45,7 +45,7 @@ struct PawnMovementRule: MovementRule {
             }
             
             if !threateningCheck && possibleCheckResult != .blocked {
-                let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                let willLeadCheck = GameStateEvaluator.willLeadToCheckedIf(
                     in: piecesLayer,
                     movePiece: .p(side),
                     from: position,
@@ -84,7 +84,7 @@ struct PawnMovementRule: MovementRule {
             }
             
             if !threateningCheck && possibleCheckResult == .take {
-                let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                let willLeadCheck = GameStateEvaluator.willLeadToCheckedIf(
                     in: piecesLayer,
                     movePiece: .p(side),
                     from: position,

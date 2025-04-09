@@ -213,7 +213,6 @@ class PiecesManager: ObservableObject {
         }
         
         res += " "
-        print("currentTurn", currentTurn)
         res += currentTurn == 1 ? "w" : (currentSide == .white.opponent ? "w" : "b")
         
         res += " "
@@ -464,13 +463,13 @@ extension PiecesManager {
     }
     
     private func toggleCheckStatus(for side: PieceViewItem.PieceSide) {
-        if CheckChecker.isInCheck(
+        if GameStateEvaluator.isInCheck(
             for: side,
             in: pieces
         ) {
             sideInCheck = side
             moveRecorder.currentMove?.gameStatus.sideInCheck = side
-            if CheckChecker.isCheckmate(
+            if GameStateEvaluator.isCheckmate(
                 for: side,
                 in: pieces
             ) {

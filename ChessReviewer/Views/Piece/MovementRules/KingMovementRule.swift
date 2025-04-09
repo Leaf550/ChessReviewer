@@ -53,7 +53,7 @@ struct KingMovementRule: MovementRule {
                 }
                 
                 if !threateningCheck && possibleCheckResult != .blocked {
-                    let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                    let willLeadCheck = GameStateEvaluator.willLeadToCheckedIf(
                         in: piecesLayer,
                         movePiece: originPiece,
                         from: position,
@@ -101,7 +101,7 @@ struct KingMovementRule: MovementRule {
                 }
                 
                 if !threateningCheck && possibleCheckResult != .blocked {
-                    let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                    let willLeadCheck = GameStateEvaluator.willLeadToCheckedIf(
                         in: piecesLayer,
                         movePiece: originPiece,
                         from: position,

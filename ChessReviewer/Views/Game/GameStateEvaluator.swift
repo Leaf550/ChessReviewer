@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CheckChecker {
+struct GameStateEvaluator {
     static func isInCheck(for side: PieceViewItem.PieceSide, in piecesLayer: [[PieceViewModel]]) -> Bool {
         for (yIndex, piecesInRow) in piecesLayer.reversed().enumerated() {
             for (xIndex, piece) in piecesInRow.enumerated() {

@@ -30,7 +30,7 @@
 		B78750B62D969B39002316D3 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750B52D969B39002316D3 /* Game.swift */; };
 		B78750B82D96A780002316D3 /* PiecesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750B72D96A780002316D3 /* PiecesLayer.swift */; };
 		B7A174B92D992A64009566E4 /* MoveRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174B82D992A64009566E4 /* MoveRecorder.swift */; };
-		B7A174BB2D99630B009566E4 /* CheckChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174BA2D99630B009566E4 /* CheckChecker.swift */; };
+		B7A174BB2D99630B009566E4 /* GameStateEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */; };
 		B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BC8C602D96E5FC0071E216 /* MovementRule.swift */; };
 		B7E249BB2DA1999B00E3791D /* MainBranchHistoryButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */; };
 /* End PBXBuildFile section */
@@ -60,7 +60,7 @@
 		B78750B52D969B39002316D3 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		B78750B72D96A780002316D3 /* PiecesLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesLayer.swift; sourceTree = "<group>"; };
 		B7A174B82D992A64009566E4 /* MoveRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveRecorder.swift; sourceTree = "<group>"; };
-		B7A174BA2D99630B009566E4 /* CheckChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckChecker.swift; sourceTree = "<group>"; };
+		B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateEvaluator.swift; sourceTree = "<group>"; };
 		B7BC8C602D96E5FC0071E216 /* MovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementRule.swift; sourceTree = "<group>"; };
 		B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBranchHistoryButtons.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -176,7 +176,7 @@
 				B706040E2D970A1700C0BE2E /* PiecesManager.swift */,
 				B78750B52D969B39002316D3 /* Game.swift */,
 				B7A174B82D992A64009566E4 /* MoveRecorder.swift */,
-				B7A174BA2D99630B009566E4 /* CheckChecker.swift */,
+				B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */,
 				B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */,
 			);
 			path = Game;
@@ -278,7 +278,7 @@
 				B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */,
 				B70604212D9831DF00C0BE2E /* KingMovementRule.swift in Sources */,
 				B78750932D95B143002316D3 /* ChessReviewerApp.swift in Sources */,
-				B7A174BB2D99630B009566E4 /* CheckChecker.swift in Sources */,
+				B7A174BB2D99630B009566E4 /* GameStateEvaluator.swift in Sources */,
 				B78750A72D95B4A2002316D3 /* BoardIndex.swift in Sources */,
 				B78750B32D969545002316D3 /* PieceViewItem.swift in Sources */,
 				B78750AE2D968B6B002316D3 /* Color.swift in Sources */,

@@ -38,7 +38,7 @@ struct GenericMovementRule: MovementRule {
             }
             
             if !threateningCheck && possibleCheckResult != .blocked {
-                let willLeadCheck = CheckChecker.willLeadToCheckedIf(
+                let willLeadCheck = GameStateEvaluator.willLeadToCheckedIf(
                     in: piecesLayer,
                     movePiece: originPiece,
                     from: position,
