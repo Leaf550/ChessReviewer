@@ -199,7 +199,7 @@ class PiecesManager: ObservableObject {
         }
         
         res += " "
-        res += currentSide == .white ? "w" : "b"
+        res += currentSide == .white.opponent ? "w" : "b"
         
         res += " "
         if !canWhiteShortCastling
@@ -229,7 +229,7 @@ class PiecesManager: ObservableObject {
         res += " "
         res += "-"
         
-        res += " \(currentSide == .white ? currentRound : currentRound + 1)"
+        res += " \(currentSide.opponent == .white ? currentRound + 1 : currentRound)"
         
         return res
     }
