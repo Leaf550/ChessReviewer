@@ -11,6 +11,7 @@ struct GameStatus {
     var currentSide: PieceViewItem.PieceSide
     var currentTurn: Int
     var currentRound: Int
+    var turnsAfterTakenOrPawnMoved: Int
     var sideInCheck: PieceViewItem.PieceSide?
     var sideInCheckmate: PieceViewItem.PieceSide?
     var blackARookMoved: Bool
@@ -25,6 +26,7 @@ struct GameStatus {
             currentSide: .white,
             currentTurn: 1,
             currentRound: 1,
+            turnsAfterTakenOrPawnMoved: 0,
             sideInCheck: nil,
             sideInCheckmate: nil,
             blackARookMoved: false,

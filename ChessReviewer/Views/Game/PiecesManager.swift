@@ -23,6 +23,7 @@ class PiecesManager: ObservableObject {
     var currentSide = PieceViewItem.PieceSide.white
     var currentTurn = 1
     var currentRound = 1
+    var turnsAfterTakenOrPawnMoved = 0
     
     @Published var sideInCheck: PieceViewItem.PieceSide?
     @Published var sideInCheckmate: PieceViewItem.PieceSide?
@@ -112,6 +113,7 @@ class PiecesManager: ObservableObject {
             currentSide: currentSide,
             currentTurn: currentTurn,
             currentRound: currentRound,
+            turnsAfterTakenOrPawnMoved: turnsAfterTakenOrPawnMoved,
             sideInCheck: sideInCheck,
             sideInCheckmate: sideInCheckmate,
             blackARookMoved: blackARookMoved,
@@ -211,7 +213,8 @@ class PiecesManager: ObservableObject {
         }
         
         res += " "
-        res += currentSide == .white.opponent ? "w" : "b"
+        print("currentTurn", currentTurn)
+        res += currentTurn == 1 ? "w" : (currentSide == .white.opponent ? "w" : "b")
         
         res += " "
         if !canWhiteShortCastling
@@ -239,7 +242,7 @@ class PiecesManager: ObservableObject {
             
         
         res += " "
-        res += "-"
+        res += "\(turnsAfterTakenOrPawnMoved)"
         
         res += " \(currentSide.opponent == .white ? currentRound + 1 : currentRound)"
         
@@ -274,18 +277,30 @@ extension PiecesManager {
         
         let originPiece = pieces[7 - originIndex.yIndex][originIndex.xIndex]
         var targetPiece = pieces[7 - targetIndex.yIndex][targetIndex.xIndex]
+        
+        // take
         if targetPiece.item != .none {
             targetPiece = PieceViewModel(.none)
         }
+        
+        if targetPiece.item != .none || originPiece.item == .p(.white) || originPiece.item == .p(.black) {
+            turnsAfterTakenOrPawnMoved = 0
+        } else {
+            turnsAfterTakenOrPawnMoved += 1
+        }
+        
+        // move piece
         withAnimation(.easeOut(duration: 0.15)) {
             pieces[7 - originIndex.yIndex][originIndex.xIndex] = targetPiece
             pieces[7 - targetIndex.yIndex][targetIndex.xIndex] = originPiece
         }
         
+        // castaling
         if isShortCastaling || isLongCastling {
             moveCastalingRook(isShortCastaling: isShortCastaling, isLongCastling: isLongCastling)
         }
         
+        // pormotion
         if originPiece.item == .p(.white) && targetIndex.yIndex == 7
             || originPiece.item == .p(.black) && targetIndex.yIndex == 0 {
             promotionPosition = targetIndex
@@ -293,6 +308,7 @@ extension PiecesManager {
             showPromotionAlert.toggle()
         }
         
+        // en passant
         if enPassant {
             let opponentPawnYIndex = currentSide == .white ? targetIndex.yIndex - 1 : targetIndex.yIndex + 1
             let opponentPawnPosition = BoardIndex(x: targetIndex.xIndex, y: opponentPawnYIndex)
@@ -301,15 +317,19 @@ extension PiecesManager {
             }
         }
         
+        // toggle castaling conditions
         toggleCastlingCondition(movedPiece: originPiece.item, originPosition: originIndex)
         
+        // recover checking status
         if currentSide == sideInCheck {
             sideInCheck = nil
         }
         
+        // toggle checking status
         let checkingCheckSide: PieceViewItem.PieceSide = currentSide == PieceViewItem.PieceSide.white ? .black : .white
         toggleCheckStatus(for: checkingCheckSide)
         
+        // record move
         let newMove = Move(
             previous: moveRecorder.currentMove,
             from: originIndex,
@@ -328,12 +348,18 @@ extension PiecesManager {
             moveRecorder.currentMove = moveRecorder.currentMove?.next
         }
         
+        // encrease turn
+        currentTurn += 1
+        
+        // compute FEN after this move
         moveRecorder.currentMove?.fen = currentFEN
         
+        // encrease round
         if currentSide == PieceViewItem.PieceSide.black {
             currentRound += 1
         }
-        currentTurn += 1
+        
+        // toggle side
         currentSide = currentSide.opponent
     }
     
