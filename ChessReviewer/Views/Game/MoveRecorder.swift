@@ -86,7 +86,7 @@ class MoveRecorder: ObservableObject {
             let currentRound = ptr?.gameStatus.currentRound
             
             if currentRound != lastRound {
-                res.insert(movesInRound.joined(separator: " "), at: 0)
+                res.append(movesInRound.joined(separator: " "))
                 movesInRound = []
             }
             
@@ -99,10 +99,10 @@ class MoveRecorder: ObservableObject {
         }
         
         if movesInRound.count != 0 {
-            res.insert(movesInRound.joined(separator: " "), at: 0)
+            res.append(movesInRound.joined(separator: " "))
         }
         
-        return res
+        return res.reversed()
     }
     
     var mainBranchMovesString: String {
