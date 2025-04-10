@@ -147,7 +147,7 @@ struct FEN {
 
 class Move {
     var next: Move?
-    var previous: Move?
+    weak var previous: Move?
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
