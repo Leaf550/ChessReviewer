@@ -15,6 +15,13 @@ enum PieceViewItem: Equatable {
         var opponent: PieceSide {
             self == .white ? .black : .white
         }
+        
+        var abbreviation: String {
+            switch self {
+                case .black: return "b"
+                case .white: return "w"
+            }
+        }
     }
     
     case p(PieceSide)

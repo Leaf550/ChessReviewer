@@ -176,78 +176,6 @@ class PiecesManager: ObservableObject {
             PieceViewModel(.n(.white)), PieceViewModel(.r(.white))
         ],
     ]
-    
-    var currentFEN: String {
-        var res = ""
-        var enPassantTarget: String? = nil
-        var foundEnPassantTarget = false
-        for (rowIndex, row) in pieces.enumerated() {
-            var blankCount = 0
-            for (columnIndex, piece) in row.enumerated() {
-                switch piece.item {
-                    case .none:
-                        blankCount += 1
-                    default:
-                        if blankCount != 0 {
-                            res += "\(blankCount)"
-                        }
-                        blankCount = 0
-                        res += piece.item.pieceNotation
-                        
-                        if !foundEnPassantTarget {
-                            switch piece.item {
-                                case .p(_):
-                                    enPassantTarget = enPassantMoveTarget(for: piece.item, at: BoardIndex(x: columnIndex, y: 7 - rowIndex))?.toPositionStr()
-                                    foundEnPassantTarget = enPassantTarget != nil
-                                default:
-                                    break
-                            }
-                        }
-                }
-            }
-            if blankCount != 0 {
-                res += "\(blankCount)"
-            }
-            if rowIndex != 7 {
-                res += "/"
-            }
-        }
-        
-        res += " "
-        res += currentTurn == 1 ? "w" : (currentSide == .white.opponent ? "w" : "b")
-        
-        res += " "
-        if !canWhiteShortCastling
-            && !canWhiteLongCastling
-            && !canBlackShortCastling
-            && !canBlackLongCastling {
-            res += "-"
-        } else {
-            if canWhiteShortCastling {
-                res += "K"
-            }
-            if canWhiteLongCastling {
-                res += "Q"
-            }
-            if canBlackShortCastling {
-                res += "k"
-            }
-            if canBlackLongCastling {
-                res += "q"
-            }
-        }
-        
-        res += " "
-        res += "\(enPassantTarget ?? "-")"
-            
-        
-        res += " "
-        res += "\(turnsAfterTakenOrPawnMoved)"
-        
-        res += " \(currentSide.opponent == .white ? currentRound + 1 : currentRound)"
-        
-        return res
-    }
 }
 
 extension PiecesManager {
@@ -338,7 +266,7 @@ extension PiecesManager {
             to: targetIndex,
             piece: originPiece.item,
             gameStatus: currentGameStatus,
-            fen: "",
+            fen: nil,
             currentPiecesLayout: pieces
         )
         
@@ -350,16 +278,21 @@ extension PiecesManager {
             moveRecorder.currentMove = moveRecorder.currentMove?.next
         }
         
-        // encrease turn
-        currentTurn += 1
-        
         // compute FEN after this move
-        moveRecorder.currentMove?.fen = currentFEN
+        moveRecorder.currentMove?.fen = FEN.compute(
+            with: self,
+            side: currentSide.opponent,
+            halfmoveClock: turnsAfterTakenOrPawnMoved,
+            roundNumber: currentSide == PieceViewItem.PieceSide.white ? currentRound : currentRound + 1
+        )
         
         // encrease round
         if currentSide == PieceViewItem.PieceSide.black {
             currentRound += 1
         }
+        
+        // encrease turn
+        currentTurn += 1
         
         // toggle side
         currentSide = currentSide.opponent
@@ -375,6 +308,27 @@ extension PiecesManager {
         
         self.promotionPosition = nil
         promotionSide = nil
+    }
+    
+    func enPassantMoveTarget(for piece: PieceViewItem, at boardIndex: BoardIndex) -> BoardIndex? {
+        guard let lastMove = moveRecorder.currentMove else { return nil }
+        
+        switch piece {
+            case .p(let side):
+                let enPassantLine = side == .white ? 4 : 3
+                let enPassentTargetLine = side == .white ? 5 : 2
+                let opponentPawnStartLine = side.opponent == .white ? 1 : 6
+                guard boardIndex.yIndex == enPassantLine else { break }
+                guard lastMove.piece == .p(side.opponent) else { break }
+                guard lastMove.origin.yIndex == opponentPawnStartLine else { break }
+                guard lastMove.target.yIndex == enPassantLine else { break }
+                guard lastMove.target.xIndex == boardIndex.xIndex + 1 || lastMove.target.xIndex == boardIndex.xIndex - 1 else { break }
+                return BoardIndex(x: lastMove.target.xIndex, y: enPassentTargetLine)
+            default:
+                break
+        }
+        
+        return nil
     }
     
     private func moveIsShortCastaling(
@@ -442,27 +396,6 @@ extension PiecesManager {
         }
         
         return false
-    }
-    
-    private func enPassantMoveTarget(for piece: PieceViewItem, at boardIndex: BoardIndex) -> BoardIndex? {
-        guard let lastMove = moveRecorder.currentMove else { return nil }
-        
-        switch piece {
-            case .p(let side):
-                let enPassantLine = side == .white ? 4 : 3
-                let enPassentTargetLine = side == .white ? 5 : 2
-                let opponentPawnStartLine = side.opponent == .white ? 1 : 6
-                guard boardIndex.yIndex == enPassantLine else { break }
-                guard lastMove.piece == .p(side.opponent) else { break }
-                guard lastMove.origin.yIndex == opponentPawnStartLine else { break }
-                guard lastMove.target.yIndex == enPassantLine else { break }
-                guard lastMove.target.xIndex == boardIndex.xIndex + 1 || lastMove.target.xIndex == boardIndex.xIndex - 1 else { break }
-                return BoardIndex(x: lastMove.target.xIndex, y: enPassentTargetLine)
-            default:
-                break
-        }
-        
-        return nil
     }
     
     private func toggleCheckStatus(for side: PieceViewItem.PieceSide) {
@@ -542,8 +475,4 @@ extension PiecesManager {
                 break
         }
     }
-}
-
-extension PiecesManager {
-    
 }

@@ -39,6 +39,112 @@ struct GameStatus {
     }
 }
 
+struct FEN {
+    enum CastalingAvailability: String {
+        case K = "K"
+        case Q = "Q"
+        case k = "k"
+        case q = "q"
+    }
+    
+    var piecePlacement: String
+    var activeSide: PieceViewItem.PieceSide
+    var castlingAvailability: [CastalingAvailability]
+    var enPassantTarget: BoardIndex?
+    var halfmoveClock: Int
+    var roundNumber: Int
+    
+    static func compute(
+        with piecesManager: PiecesManager,
+        side: PieceViewItem.PieceSide,
+        halfmoveClock: Int,
+        roundNumber: Int
+    ) -> Self {
+        // 棋子布局
+        var piecesPlacement = ""
+        var enPassantTarget: BoardIndex? = nil
+        var foundEnPassantTarget = false
+        for (rowIndex, row) in piecesManager.pieces.enumerated() {
+            var blankCount = 0
+            for (columnIndex, piece) in row.enumerated() {
+                switch piece.item {
+                    case .none:
+                        blankCount += 1
+                    default:
+                        if blankCount != 0 {
+                            piecesPlacement += "\(blankCount)"
+                        }
+                        blankCount = 0
+                        piecesPlacement += piece.item.pieceNotation
+                        
+                        if !foundEnPassantTarget {
+                            switch piece.item {
+                                case .p(_):
+                                    enPassantTarget = piecesManager.enPassantMoveTarget(for: piece.item, at: BoardIndex(x: columnIndex, y: 7 - rowIndex))
+                                    foundEnPassantTarget = enPassantTarget != nil
+                                default:
+                                    break
+                            }
+                        }
+                }
+            }
+            if blankCount != 0 {
+                piecesPlacement += "\(blankCount)"
+            }
+            if rowIndex != 7 {
+                piecesPlacement += "/"
+            }
+        }
+        
+        // 走棋方
+        let activeSide = side
+        
+        // 易位权
+        var castalingAvailability: [CastalingAvailability] = []
+        if piecesManager.canWhiteShortCastling {
+            castalingAvailability.append(.K)
+        }
+        if piecesManager.canWhiteLongCastling {
+            castalingAvailability.append(.Q)
+        }
+        if piecesManager.canBlackShortCastling {
+            castalingAvailability.append(.k)
+        }
+        if piecesManager.canBlackLongCastling {
+            castalingAvailability.append(.q)
+        }
+        
+        return FEN(
+            piecePlacement: piecesPlacement,
+            activeSide: activeSide,
+            castlingAvailability: castalingAvailability,
+            enPassantTarget: enPassantTarget,
+            halfmoveClock: halfmoveClock,
+            roundNumber: roundNumber
+        )
+    }
+    
+    static func initialGameFEN() -> Self {
+        return FEN(
+            piecePlacement: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+            activeSide: .white,
+            castlingAvailability: [.K, .Q, .k, .q],
+            halfmoveClock: 0,
+            roundNumber: 1
+        )
+    }
+    
+    func toString() -> String {
+        return ""
+        + "\(piecePlacement) "
+        + "\(activeSide.abbreviation) "
+        + "\(castlingAvailability.map { $0.rawValue }.joined()) "
+        + "\(enPassantTarget?.toPositionStr() ?? "-") "
+        + "\(halfmoveClock) "
+        + "\(roundNumber) "
+    }
+}
+
 class Move {
     var next: Move?
     var previous: Move?
@@ -48,7 +154,7 @@ class Move {
     var piece: PieceViewItem
     var promotion: PieceViewItem?
     var gameStatus: GameStatus
-    var fen: String
+    var fen: FEN?
     var currentPiecesLayout: [[PieceViewModel]]
     
     init(
@@ -58,7 +164,7 @@ class Move {
         to target: BoardIndex,
         piece: PieceViewItem,
         gameStatus: GameStatus,
-        fen: String,
+        fen: FEN?,
         currentPiecesLayout: [[PieceViewModel]]
     ) {
         self.next = next

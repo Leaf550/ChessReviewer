@@ -16,7 +16,7 @@ struct Game: View {
             Text(getGameState())
                 .frame(height: 20)
             MainBranchHistoryButtons(piecesManager: piecesManager)
-            Text(piecesManager.moveRecorder.currentMove?.fen ?? piecesManager.currentFEN)
+            Text(piecesManager.moveRecorder.currentMove?.fen?.toString() ?? FEN.initialGameFEN().toString())
                 .textSelection(.enabled)
             ZStack {
                 Board(reversed: boardReversed) { _ in
