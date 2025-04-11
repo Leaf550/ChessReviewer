@@ -456,7 +456,7 @@ extension PiecesManager {
                 if pieceSide == .white && originPosition.xIndex == 0 {
                     whiteARookMoved = true
                 }
-                if pieceSide == .black && originPosition.xIndex == 7 {
+                if pieceSide == .white && originPosition.xIndex == 7 {
                     whiteHRookMoved = true
                 }
                 if pieceSide == .black && originPosition.xIndex == 0 {
