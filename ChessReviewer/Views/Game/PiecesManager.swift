@@ -28,6 +28,12 @@ class PiecesManager: ObservableObject {
     @Published var sideInCheck: PieceViewItem.PieceSide?
     @Published var sideInCheckmate: PieceViewItem.PieceSide?
     @Published var sideInStalemate: PieceViewItem.PieceSide?
+    @Published var threefoldRepetition: Bool = false
+    @Published var impossibleToCheckmate: Bool = false
+    
+    var gameOver: Bool {
+        sideInCheckmate != nil || threefoldRepetition || impossibleToCheckmate
+    }
     
     var blackARookMoved: Bool = false
     var blackHRookMoved: Bool = false
@@ -66,6 +72,8 @@ class PiecesManager: ObservableObject {
     }
     
     @Published var showPromotionAlert = false
+    @Published var canPromoteToKnight = true
+    @Published var canPromoteToBishop = true
     var promotionSide: PieceViewItem.PieceSide?
     private var promotionPosition: BoardIndex?
     
@@ -79,6 +87,7 @@ class PiecesManager: ObservableObject {
     }
     
     var selectedPiecePossibleMovements: [PossibbleMovement] {
+        guard !gameOver else { return [] }
         guard let selectedPieceIndex = selectedPieceIndex else { return [] }
         guard let selectedPiece = selectedPiece  else { return [] }
         
@@ -117,6 +126,8 @@ class PiecesManager: ObservableObject {
             turnsAfterTakenOrPawnMoved: turnsAfterTakenOrPawnMoved,
             sideInCheck: sideInCheck,
             sideInCheckmate: sideInCheckmate,
+            threefoldRepetition: threefoldRepetition,
+            impossibleToCheckmate: impossibleToCheckmate,
             blackARookMoved: blackARookMoved,
             blackHRookMoved: blackHRookMoved,
             blackKingMoved: blackKingMoved,
@@ -194,6 +205,8 @@ extension PiecesManager {
         isLongCastling: Bool = false,
         enPassant: Bool = false
     ) {
+        guard !gameOver else { return }
+        
         guard (0...7).contains(originIndex.xIndex),
               (0...7).contains(originIndex.yIndex),
               (0...7).contains(targetIndex.xIndex),
@@ -233,6 +246,19 @@ extension PiecesManager {
             || originPiece.item == .p(.black) && targetIndex.yIndex == 0 {
             promotionPosition = targetIndex
             promotionSide = originPiece.item.side
+            
+            canPromoteToKnight = !GameStateEvaluator.willLeadsToImpossibleToCheckmateIf(
+                currentSide,
+                promoteTo: .n(currentSide),
+                in: pieces
+            )
+            
+            canPromoteToBishop = !GameStateEvaluator.willLeadsToImpossibleToCheckmateIf(
+                currentSide,
+                promoteTo: .b(currentSide),
+                in: pieces
+            )
+            
             showPromotionAlert.toggle()
         }
         
@@ -296,6 +322,12 @@ extension PiecesManager {
         
         // toggle side
         currentSide = currentSide.opponent
+        
+        // threefold repetition
+        threefoldRepetition = GameStateEvaluator.hasThreefoldRepetition(in: moveRecorder)
+        
+        // is insufficient material
+        impossibleToCheckmate = GameStateEvaluator.isImpossibleToCheckmate(in: pieces)
     }
     
     func promotion(to piece: PieceViewItem) {
@@ -308,6 +340,8 @@ extension PiecesManager {
         
         self.promotionPosition = nil
         promotionSide = nil
+        canPromoteToKnight = true
+        canPromoteToBishop = true
     }
     
     func enPassantMoveTarget(for piece: PieceViewItem, at boardIndex: BoardIndex) -> BoardIndex? {

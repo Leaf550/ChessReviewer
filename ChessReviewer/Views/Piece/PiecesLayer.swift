@@ -37,13 +37,17 @@ struct PiecesLayer: View {
                         guard let promotionSide = piecesManager.promotionSide else { return }
                         piecesManager.promotion(to: .r(promotionSide))
                     }
-                    Button("马", role: .none) {
-                        guard let promotionSide = piecesManager.promotionSide else { return }
-                        piecesManager.promotion(to: .n(promotionSide))
+                    if piecesManager.canPromoteToKnight {
+                        Button("马", role: .none) {
+                            guard let promotionSide = piecesManager.promotionSide else { return }
+                            piecesManager.promotion(to: .n(promotionSide))
+                        }
                     }
-                    Button("象", role: .none) {
-                        guard let promotionSide = piecesManager.promotionSide else { return }
-                        piecesManager.promotion(to: .b(promotionSide))
+                    if piecesManager.canPromoteToBishop {
+                        Button("象", role: .none) {
+                            guard let promotionSide = piecesManager.promotionSide else { return }
+                            piecesManager.promotion(to: .b(promotionSide))
+                        }
                     }
                     Button("后", role: .none) {
                         guard let promotionSide = piecesManager.promotionSide else { return }

@@ -43,6 +43,10 @@ struct Game: View {
     private func getGameState() -> String {
         if let sideInCheckmate = piecesManager.sideInCheckmate {
             return "Checkmate to \(sideInCheckmate == .white ? "white" : "black")!"
+        } else if piecesManager.threefoldRepetition {
+            return "threefold repetition"
+        } else if piecesManager.impossibleToCheckmate {
+            return "insufficient material"
         } else if let sideInCheck = piecesManager.sideInCheck {
             return "Check to \(sideInCheck == .white ? "white" : "black")!"
         } else if let sideInStalemate = piecesManager.sideInStalemate {

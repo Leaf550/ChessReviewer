@@ -14,6 +14,8 @@ struct GameStatus {
     var turnsAfterTakenOrPawnMoved: Int
     var sideInCheck: PieceViewItem.PieceSide?
     var sideInCheckmate: PieceViewItem.PieceSide?
+    var threefoldRepetition: Bool
+    var impossibleToCheckmate: Bool
     var blackARookMoved: Bool
     var blackHRookMoved: Bool
     var blackKingMoved: Bool
@@ -29,6 +31,8 @@ struct GameStatus {
             turnsAfterTakenOrPawnMoved: 0,
             sideInCheck: nil,
             sideInCheckmate: nil,
+            threefoldRepetition: false,
+            impossibleToCheckmate: false,
             blackARookMoved: false,
             blackHRookMoved: false,
             blackKingMoved: false,
@@ -142,6 +146,14 @@ struct FEN {
         + "\(enPassantTarget?.toPositionStr() ?? "-") "
         + "\(halfmoveClock) "
         + "\(roundNumber) "
+    }
+    
+    func fenWithoutHalfmoveClockAndRoundString() -> String {
+        return ""
+        + "\(piecePlacement) "
+        + "\(activeSide.abbreviation) "
+        + "\(castlingAvailability.map { $0.rawValue }.joined()) "
+        + "\(enPassantTarget?.toPositionStr() ?? "-")"
     }
 }
 
