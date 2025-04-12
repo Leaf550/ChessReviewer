@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct Game: View {
-    @StateObject private var piecesManager = PiecesManager()
+    @StateObject var gameManager: GameManager
     @State var boardReversed: Bool = false
     
     var body: some View {
         VStack {
             Text(getGameState())
                 .frame(height: 20)
-            MainBranchHistoryButtons(piecesManager: piecesManager)
-            Text(piecesManager.moveRecorder.currentMove?.fen?.toString() ?? FEN.initialGameFEN().toString())
+            MainBranchHistoryButtons(gameManager: gameManager)
+            Text(gameManager.moveRecorder.currentMove?.fen?.toString() ?? FEN.initialGameFEN().toString())
                 .textSelection(.enabled)
             ZStack {
                 Board(reversed: boardReversed) { _ in
-                    piecesManager.selectedPieceIndex = nil
+                    gameManager.selectedPieceIndex = nil
                 }
-                PiecesLayer(piecesManager: piecesManager, onReversedBoard: boardReversed)
+                PiecesLayer(gameManager: gameManager, onReversedBoard: boardReversed)
             }
             .padding()
             HStack {
@@ -32,24 +32,42 @@ struct Game: View {
                     Text("翻转棋盘")
                 }
                 Button {
-                    print("position startpos moves " + piecesManager.moveRecorder.mainBranchMovesString)
+                    print("position startpos moves " + gameManager.moveRecorder.mainBranchMovesString)
                 } label: {
                     Text("打印棋谱")
+                }
+                Button {
+                    gameManager.newGame()
+                } label: {
+                    Text("重置局面")
+                }
+            }
+            .padding([.bottom], 10)
+            HStack {
+                Button {
+                    gameManager.stepBackward()
+                } label: {
+                    Text("上一步")
+                }
+                Button {
+                    gameManager.stepForward()
+                } label: {
+                    Text("下一步")
                 }
             }
         }
     }
     
     private func getGameState() -> String {
-        if let sideInCheckmate = piecesManager.sideInCheckmate {
+        if let sideInCheckmate = gameManager.sideInCheckmate {
             return "Checkmate to \(sideInCheckmate == .white ? "white" : "black")!"
-        } else if piecesManager.threefoldRepetition {
+        } else if gameManager.threefoldRepetition {
             return "threefold repetition"
-        } else if piecesManager.impossibleToCheckmate {
+        } else if gameManager.impossibleToCheckmate {
             return "insufficient material"
-        } else if let sideInCheck = piecesManager.sideInCheck {
+        } else if let sideInCheck = gameManager.sideInCheck {
             return "Check to \(sideInCheck == .white ? "white" : "black")!"
-        } else if let sideInStalemate = piecesManager.sideInStalemate {
+        } else if let sideInStalemate = gameManager.sideInStalemate {
             return "Stalemate to \(sideInStalemate == .white ? "white" : "black")!"
         }
         return ""
@@ -58,6 +76,15 @@ struct Game: View {
 
 struct Game_Previews: PreviewProvider {
     static var previews: some View {
-        Game()
+        let gameManager = GameManager(
+            gameBuilder: InitialGameBuilder(
+                gameMode: .pvp, historyControlMode: .playStrict
+            )
+        )
+        if let gameManager = gameManager {
+            Game(gameManager: gameManager)
+        } else {
+            Text("gameBuilder 配置有误")
+        }
     }
 }

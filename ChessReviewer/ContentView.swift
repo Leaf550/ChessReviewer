@@ -9,7 +9,16 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Game()
+        let gameManager = GameManager(
+            gameBuilder: InitialGameBuilder(
+                gameMode: .pvp, historyControlMode: .playStrict
+            )
+        )
+        if let gameManager = gameManager {
+            Game(gameManager: gameManager)
+        } else {
+            Text("gameBuilder 配置有误")
+        }
     }
 }
 

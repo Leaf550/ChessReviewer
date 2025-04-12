@@ -14,6 +14,7 @@ struct GameStatus {
     var turnsAfterTakenOrPawnMoved: Int
     var sideInCheck: PieceViewItem.PieceSide?
     var sideInCheckmate: PieceViewItem.PieceSide?
+    var sideInStalemate: PieceViewItem.PieceSide?
     var threefoldRepetition: Bool
     var impossibleToCheckmate: Bool
     var blackARookMoved: Bool
@@ -22,25 +23,6 @@ struct GameStatus {
     var whiteARookMoved: Bool
     var whiteHRookMoved: Bool
     var whiteKingMoved: Bool
-    
-    static func empty() -> GameStatus {
-        return GameStatus(
-            currentSide: .white,
-            currentTurn: 1,
-            currentRound: 1,
-            turnsAfterTakenOrPawnMoved: 0,
-            sideInCheck: nil,
-            sideInCheckmate: nil,
-            threefoldRepetition: false,
-            impossibleToCheckmate: false,
-            blackARookMoved: false,
-            blackHRookMoved: false,
-            blackKingMoved: false,
-            whiteARookMoved: false,
-            whiteHRookMoved: false,
-            whiteKingMoved: false
-        )
-    }
 }
 
 struct FEN {
@@ -59,7 +41,7 @@ struct FEN {
     var roundNumber: Int
     
     static func compute(
-        with piecesManager: PiecesManager,
+        with gameManager: GameManager,
         side: PieceViewItem.PieceSide,
         halfmoveClock: Int,
         roundNumber: Int
@@ -68,7 +50,7 @@ struct FEN {
         var piecesPlacement = ""
         var enPassantTarget: BoardIndex? = nil
         var foundEnPassantTarget = false
-        for (rowIndex, row) in piecesManager.pieces.enumerated() {
+        for (rowIndex, row) in gameManager.pieces.enumerated() {
             var blankCount = 0
             for (columnIndex, piece) in row.enumerated() {
                 switch piece.item {
@@ -84,7 +66,7 @@ struct FEN {
                         if !foundEnPassantTarget {
                             switch piece.item {
                                 case .p(_):
-                                    enPassantTarget = piecesManager.enPassantMoveTarget(for: piece.item, at: BoardIndex(x: columnIndex, y: 7 - rowIndex))
+                                    enPassantTarget = gameManager.enPassantMoveTarget(for: piece.item, at: BoardIndex(x: columnIndex, y: 7 - rowIndex))
                                     foundEnPassantTarget = enPassantTarget != nil
                                 default:
                                     break
@@ -105,16 +87,16 @@ struct FEN {
         
         // 易位权
         var castalingAvailability: [CastalingAvailability] = []
-        if piecesManager.canWhiteShortCastling {
+        if gameManager.canWhiteShortCastling {
             castalingAvailability.append(.K)
         }
-        if piecesManager.canWhiteLongCastling {
+        if gameManager.canWhiteLongCastling {
             castalingAvailability.append(.Q)
         }
-        if piecesManager.canBlackShortCastling {
+        if gameManager.canBlackShortCastling {
             castalingAvailability.append(.k)
         }
-        if piecesManager.canBlackLongCastling {
+        if gameManager.canBlackLongCastling {
             castalingAvailability.append(.q)
         }
         

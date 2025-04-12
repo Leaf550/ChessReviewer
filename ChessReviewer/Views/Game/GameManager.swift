@@ -1,5 +1,5 @@
 //
-//  PiecesManager.swift
+//  GameManager.swift
 //  ChessReviewer
 //
 //  Created by 方昱恒 on 2025/3/29.
@@ -17,23 +17,17 @@ struct PieceViewModel: Identifiable {
     }
 }
 
-class PiecesManager: ObservableObject {
+class GameManager: ObservableObject {
+    var gameBuilder: InitialGameBuilder
+    
     @Published var moveRecorder: MoveRecorder = MoveRecorder()
     
-    var currentSide = PieceViewItem.PieceSide.white
+    @Published var pieces: [[PieceViewModel]]
+    
+    var currentSide: PieceViewItem.PieceSide
     var currentTurn = 1
     var currentRound = 1
     var turnsAfterTakenOrPawnMoved = 0
-    
-    @Published var sideInCheck: PieceViewItem.PieceSide?
-    @Published var sideInCheckmate: PieceViewItem.PieceSide?
-    @Published var sideInStalemate: PieceViewItem.PieceSide?
-    @Published var threefoldRepetition: Bool = false
-    @Published var impossibleToCheckmate: Bool = false
-    
-    var gameOver: Bool {
-        sideInCheckmate != nil || threefoldRepetition || impossibleToCheckmate
-    }
     
     var blackARookMoved: Bool = false
     var blackHRookMoved: Bool = false
@@ -43,32 +37,50 @@ class PiecesManager: ObservableObject {
     var whiteHRookMoved: Bool = false
     var whiteKingMoved: Bool = false
     
+    // 1. 如果 gameBuilder（局面初始状态）规定在初始状态时就已经不能易位，则直接返回false。
+    // 2. 如果 gameBuilder 规定在初始状态时能易位，则检查车和王是否在原位，以及是否被将军，以防用户错误设置。
+    // 3. 除了检查车和王是否在原位，还要检查王和车是否移动过。
+    // 4. 四个车和两个王是否移动过无论是用户设置的局面还是标准初始局面默认都为否，因此在初始局面的情况下这两条始终满足。
+    // 5. 如果后续车和王移动过（6个是否移动的标记位会在 `movePiece` 函数中修改），或者不在原位，则不能易位。
+    // 6. 易位的其他条件：王和车是否被阻挡、王的移动路径是否被威胁会在 `movementRule.possibleMoves` 函数中检查。
     var canWhiteShortCastling: Bool {
-        sideInCheck != .white
-        && !whiteHRookMoved
-        && !whiteKingMoved
-        && getPiece(at: BoardIndex(x: 7, y: 0)) == .r(.white)
+        gameBuilder.canWhiteShortCastling ? (
+            sideInCheck != .white
+            && getPiece(at: BoardIndex(x: 7, y: 0)) == .r(.white)
+            && getPiece(at: BoardIndex(x: 4, y: 0)) == .k(.white)
+            && !whiteHRookMoved
+            && !whiteKingMoved
+        ) : false
     }
     
     var canWhiteLongCastling: Bool {
-        sideInCheck != .white
-        && !whiteARookMoved
-        && !whiteKingMoved
-        && getPiece(at: BoardIndex(x: 0, y: 0)) == .r(.white)
+        gameBuilder.canWhiteLongCastling ? (
+            sideInCheck != .white
+            && getPiece(at: BoardIndex(x: 0, y: 0)) == .r(.white)
+            && getPiece(at: BoardIndex(x: 4, y: 0)) == .k(.white)
+            && !whiteARookMoved
+            && !whiteKingMoved
+        ) : false
     }
     
     var canBlackShortCastling: Bool {
-        sideInCheck != .black
-        && !blackHRookMoved
-        && !blackKingMoved
-        && getPiece(at: BoardIndex(x: 7, y: 7)) == .r(.black)
+        gameBuilder.canBlackShortCastling ? (
+            sideInCheck != .black
+            && getPiece(at: BoardIndex(x: 7, y: 7)) == .r(.black)
+            && getPiece(at: BoardIndex(x: 4, y: 7)) == .k(.black)
+            && !blackHRookMoved
+            && !blackKingMoved
+        ) : false
     }
     
     var canBlackLongCastling: Bool {
-        sideInCheck != .black
-        && !blackARookMoved
-        && !blackKingMoved
-        && getPiece(at: BoardIndex(x: 0, y: 7)) == .r(.black)
+        gameBuilder.canBlackLongCastling ? (
+            sideInCheck != .black
+            && getPiece(at: BoardIndex(x: 0, y: 7)) == .r(.black)
+            && getPiece(at: BoardIndex(x: 4, y: 7)) == .k(.black)
+            && !blackARookMoved
+            && !blackKingMoved
+        ) : false
     }
     
     @Published var showPromotionAlert = false
@@ -93,23 +105,13 @@ class PiecesManager: ObservableObject {
         
         var res: [PossibbleMovement] = []
         
-        if currentSide == .white {
-            res = selectedPiece.movementRule.possibleMoves(
-                at: selectedPieceIndex,
-                in: pieces,
-                canShortCastaling: canWhiteShortCastling,
-                canLongCastaling: canWhiteLongCastling,
-                threateningCheck: false
-            )
-        } else {
-            res = selectedPiece.movementRule.possibleMoves(
-                at: selectedPieceIndex,
-                in: pieces,
-                canShortCastaling: canBlackShortCastling,
-                canLongCastaling: canBlackLongCastling,
-                threateningCheck: false
-            )
-        }
+        res = selectedPiece.movementRule.possibleMoves(
+            at: selectedPieceIndex,
+            in: pieces,
+            canShortCastaling: currentSide == .white ? canWhiteShortCastling : canBlackShortCastling,
+            canLongCastaling: currentSide == .white ? canWhiteLongCastling : canBlackLongCastling,
+            threateningCheck: false
+        )
         
         if let enPassantMove = enPassantMoveTarget(for: selectedPiece, at: selectedPieceIndex) {
             res.append(PossibbleMovement(to: enPassantMove, enPassant: true))
@@ -118,78 +120,47 @@ class PiecesManager: ObservableObject {
         return res
     }
     
-    var currentGameStatus: GameStatus {
-        GameStatus(
-            currentSide: currentSide,
-            currentTurn: currentTurn,
-            currentRound: currentRound,
-            turnsAfterTakenOrPawnMoved: turnsAfterTakenOrPawnMoved,
-            sideInCheck: sideInCheck,
-            sideInCheckmate: sideInCheckmate,
-            threefoldRepetition: threefoldRepetition,
-            impossibleToCheckmate: impossibleToCheckmate,
-            blackARookMoved: blackARookMoved,
-            blackHRookMoved: blackHRookMoved,
-            blackKingMoved: blackKingMoved,
-            whiteARookMoved: whiteARookMoved,
-            whiteHRookMoved: whiteHRookMoved,
-            whiteKingMoved: whiteKingMoved
-        )
+    @Published var sideInCheck: PieceViewItem.PieceSide?
+    @Published var sideInCheckmate: PieceViewItem.PieceSide?
+    @Published var sideInStalemate: PieceViewItem.PieceSide?
+    @Published var threefoldRepetition: Bool = false
+    @Published var impossibleToCheckmate: Bool = false
+    
+    var gameOver: Bool {
+        sideInCheckmate != nil || threefoldRepetition || impossibleToCheckmate
     }
     
-    @Published var pieces: [[PieceViewModel]] = [
-        [
-            PieceViewModel(.r(.black)), PieceViewModel(.n(.black)),
-            PieceViewModel(.b(.black)), PieceViewModel(.q(.black)),
-            PieceViewModel(.k(.black)), PieceViewModel(.b(.black)),
-            PieceViewModel(.n(.black)), PieceViewModel(.r(.black))
-        ],
-        [
-            PieceViewModel(.p(.black)), PieceViewModel(.p(.black)),
-            PieceViewModel(.p(.black)), PieceViewModel(.p(.black)),
-            PieceViewModel(.p(.black)), PieceViewModel(.p(.black)),
-            PieceViewModel(.p(.black)), PieceViewModel(.p(.black))
-        ],
-        [
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none)
-        ],
-        [
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none)
-        ],
-        [
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none)
-        ],
-        [
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none),
-            PieceViewModel(.none), PieceViewModel(.none)
-        ],
-        [
-            PieceViewModel(.p(.white)), PieceViewModel(.p(.white)),
-            PieceViewModel(.p(.white)), PieceViewModel(.p(.white)),
-            PieceViewModel(.p(.white)), PieceViewModel(.p(.white)),
-            PieceViewModel(.p(.white)), PieceViewModel(.p(.white))
-        ],
-        [
-            PieceViewModel(.r(.white)), PieceViewModel(.n(.white)),
-            PieceViewModel(.b(.white)), PieceViewModel(.q(.white)),
-            PieceViewModel(.k(.white)), PieceViewModel(.b(.white)),
-            PieceViewModel(.n(.white)), PieceViewModel(.r(.white))
-        ],
-    ]
+    var isReviewingHistory: Bool = false
+    
+    init?(gameBuilder: InitialGameBuilder) {
+        self.gameBuilder = gameBuilder
+        self.pieces = gameBuilder.pieces
+        self.currentSide = gameBuilder.currentMoveSide
+        
+        self.toggleCheckStatus(for: .white)
+        let isWhiteInCheck = sideInCheck == .white
+        self.toggleCheckStatus(for: .black)
+        let isBlackInCheck = sideInCheck == .black
+        
+        if isWhiteInCheck && isBlackInCheck {
+            return nil
+        }
+        
+        self.toggleStalemateStatus(for: .white)
+        let isWhiteInStalemate = sideInStalemate == .white
+        self.toggleStalemateStatus(for: .black)
+        let isBlackInStalemate = sideInStalemate == .black
+        
+        if isWhiteInStalemate && isBlackInStalemate {
+            return nil
+        }
+        
+        impossibleToCheckmate = GameStateEvaluator.isImpossibleToCheckmate(in: self.pieces)
+        
+    }
 }
 
-extension PiecesManager {
+extension GameManager {
     func getPiece(at index: BoardIndex) -> PieceViewItem {
         guard (0...7).contains(index.xIndex),
               (0...7).contains(index.yIndex) else {
@@ -211,6 +182,8 @@ extension PiecesManager {
               (0...7).contains(originIndex.yIndex),
               (0...7).contains(targetIndex.xIndex),
               (0...7).contains(targetIndex.yIndex) else { return }
+        
+        selectedPieceIndex = nil
         
         let isShortCastaling = moveIsShortCastaling(from: originIndex, to: targetIndex)
         let isLongCastling = moveIsLongCastaling(from: originIndex, to: targetIndex)
@@ -291,7 +264,11 @@ extension PiecesManager {
             from: originIndex,
             to: targetIndex,
             piece: originPiece.item,
-            gameStatus: currentGameStatus,
+            gameStatus: gameStatusAfterMove(
+                sideAfterMove: currentSide.opponent,
+                round: currentSide == PieceViewItem.PieceSide.white ? currentRound : currentRound + 1,
+                turn: currentTurn + 1
+            ),
             fen: nil,
             currentPiecesLayout: pieces
         )
@@ -508,5 +485,107 @@ extension PiecesManager {
             default:
                 break
         }
+    }
+    
+    private func gameStatusAfterMove(
+        sideAfterMove: PieceViewItem.PieceSide,
+        round: Int,
+        turn: Int
+    ) -> GameStatus {
+        GameStatus(
+            currentSide: sideAfterMove,
+            currentTurn: turn,
+            currentRound: round,
+            turnsAfterTakenOrPawnMoved: turnsAfterTakenOrPawnMoved,
+            sideInCheck: sideInCheck,
+            sideInCheckmate: sideInCheckmate,
+            sideInStalemate: sideInStalemate,
+            threefoldRepetition: threefoldRepetition,
+            impossibleToCheckmate: impossibleToCheckmate,
+            blackARookMoved: blackARookMoved,
+            blackHRookMoved: blackHRookMoved,
+            blackKingMoved: blackKingMoved,
+            whiteARookMoved: whiteARookMoved,
+            whiteHRookMoved: whiteHRookMoved,
+            whiteKingMoved: whiteKingMoved
+        )
+    }
+}
+
+extension GameManager {
+    func newGame() {
+        pieces = gameBuilder.pieces
+        currentSide = gameBuilder.currentMoveSide
+        
+        moveRecorder.timeline = nil
+        moveRecorder.currentMove = nil
+        isReviewingHistory = false
+        currentTurn = 1
+        currentRound = 1
+        turnsAfterTakenOrPawnMoved = 0
+        toggleCheckStatus(for: .white)
+        toggleCheckStatus(for: .black)
+        toggleStalemateStatus(for: .white)
+        toggleStalemateStatus(for: .black)
+        threefoldRepetition = false
+        impossibleToCheckmate = GameStateEvaluator.isImpossibleToCheckmate(in: pieces)
+        blackARookMoved = false
+        blackHRookMoved = false
+        blackKingMoved = false
+        whiteARookMoved = false
+        whiteHRookMoved = false
+        whiteKingMoved = false
+        showPromotionAlert = false
+        canPromoteToKnight = true
+        canPromoteToBishop = true
+        promotionSide = nil
+        promotionPosition = nil
+        selectedPieceIndex = nil
+    }
+    
+    func stepBackward() {
+        guard let previousMove = moveRecorder.currentMove?.previous else { return }
+        
+        moveRecorder.currentMove = previousMove
+        
+        withAnimation(.easeOut(duration: 0.15)) {
+            pieces = previousMove.currentPiecesLayout
+        }
+        
+        recoverGameStatus(to: previousMove.gameStatus)
+        
+        isReviewingHistory = true
+    }
+    
+    func stepForward() {
+        guard let nextMove = moveRecorder.currentMove?.next else { return }
+        
+        moveRecorder.currentMove = nextMove
+        
+        withAnimation(.easeOut(duration: 0.15)) {
+            pieces = nextMove.currentPiecesLayout
+        }
+        
+        recoverGameStatus(to: nextMove.gameStatus)
+        
+        isReviewingHistory = nextMove.next != nil
+    }
+    
+    private func recoverGameStatus(to gameStatus: GameStatus) {
+        currentSide = gameStatus.currentSide
+        currentTurn = gameStatus.currentTurn
+        currentRound = gameStatus.currentRound
+        turnsAfterTakenOrPawnMoved = gameStatus.turnsAfterTakenOrPawnMoved
+        sideInCheck = gameStatus.sideInCheck
+        sideInCheckmate = gameStatus.sideInCheckmate
+        sideInStalemate = gameStatus.sideInStalemate
+        threefoldRepetition = gameStatus.threefoldRepetition
+        impossibleToCheckmate = gameStatus.impossibleToCheckmate
+        blackARookMoved = gameStatus.blackARookMoved
+        blackHRookMoved = gameStatus.blackHRookMoved
+        blackKingMoved = gameStatus.blackKingMoved
+        whiteARookMoved = gameStatus.whiteARookMoved
+        whiteHRookMoved = gameStatus.whiteHRookMoved
+        whiteKingMoved = gameStatus.whiteKingMoved
     }
 }

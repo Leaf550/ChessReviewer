@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B706040D2D96E77800C0BE2E /* PawnMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706040C2D96E77800C0BE2E /* PawnMovementRule.swift */; };
-		B706040F2D970A1700C0BE2E /* PiecesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706040E2D970A1700C0BE2E /* PiecesManager.swift */; };
+		B706040F2D970A1700C0BE2E /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B706040E2D970A1700C0BE2E /* GameManager.swift */; };
 		B70604112D97E17900C0BE2E /* RookMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604102D97E17900C0BE2E /* RookMovementRule.swift */; };
 		B70604132D97FAC900C0BE2E /* BishopMovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */; };
 		B70604152D98223800C0BE2E /* MoveIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70604142D98223800C0BE2E /* MoveIndicator.swift */; };
@@ -32,12 +32,13 @@
 		B7A174B92D992A64009566E4 /* MoveRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174B82D992A64009566E4 /* MoveRecorder.swift */; };
 		B7A174BB2D99630B009566E4 /* GameStateEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */; };
 		B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BC8C602D96E5FC0071E216 /* MovementRule.swift */; };
+		B7C69E0B2DAA4B76005BFAA4 /* InitialGameBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C69E0A2DAA4B76005BFAA4 /* InitialGameBuilder.swift */; };
 		B7E249BB2DA1999B00E3791D /* MainBranchHistoryButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B706040C2D96E77800C0BE2E /* PawnMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PawnMovementRule.swift; sourceTree = "<group>"; };
-		B706040E2D970A1700C0BE2E /* PiecesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesManager.swift; sourceTree = "<group>"; };
+		B706040E2D970A1700C0BE2E /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		B70604102D97E17900C0BE2E /* RookMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RookMovementRule.swift; sourceTree = "<group>"; };
 		B70604122D97FAC900C0BE2E /* BishopMovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BishopMovementRule.swift; sourceTree = "<group>"; };
 		B70604142D98223800C0BE2E /* MoveIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveIndicator.swift; sourceTree = "<group>"; };
@@ -62,6 +63,7 @@
 		B7A174B82D992A64009566E4 /* MoveRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveRecorder.swift; sourceTree = "<group>"; };
 		B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateEvaluator.swift; sourceTree = "<group>"; };
 		B7BC8C602D96E5FC0071E216 /* MovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementRule.swift; sourceTree = "<group>"; };
+		B7C69E0A2DAA4B76005BFAA4 /* InitialGameBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialGameBuilder.swift; sourceTree = "<group>"; };
 		B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBranchHistoryButtons.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -173,11 +175,12 @@
 		B78750B42D969B29002316D3 /* Game */ = {
 			isa = PBXGroup;
 			children = (
-				B706040E2D970A1700C0BE2E /* PiecesManager.swift */,
+				B706040E2D970A1700C0BE2E /* GameManager.swift */,
 				B78750B52D969B39002316D3 /* Game.swift */,
 				B7A174B82D992A64009566E4 /* MoveRecorder.swift */,
 				B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */,
 				B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */,
+				B7C69E0A2DAA4B76005BFAA4 /* InitialGameBuilder.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -270,9 +273,10 @@
 				B78750B62D969B39002316D3 /* Game.swift in Sources */,
 				B78750952D95B143002316D3 /* ContentView.swift in Sources */,
 				B78750A52D95B1F5002316D3 /* BoardCell.swift in Sources */,
+				B7C69E0B2DAA4B76005BFAA4 /* InitialGameBuilder.swift in Sources */,
 				B78750A92D966C43002316D3 /* Board.swift in Sources */,
 				B706041D2D982F6100C0BE2E /* KnightMovementRule.swift in Sources */,
-				B706040F2D970A1700C0BE2E /* PiecesManager.swift in Sources */,
+				B706040F2D970A1700C0BE2E /* GameManager.swift in Sources */,
 				B706040D2D96E77800C0BE2E /* PawnMovementRule.swift in Sources */,
 				B7A174B92D992A64009566E4 /* MoveRecorder.swift in Sources */,
 				B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */,

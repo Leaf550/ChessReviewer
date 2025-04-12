@@ -13,7 +13,7 @@ struct MovesButtonModel: Identifiable {
 }
 
 struct MainBranchHistoryButtons: View {
-    @ObservedObject var piecesManager: PiecesManager
+    @ObservedObject var gameManager: GameManager
     
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -29,7 +29,7 @@ struct MainBranchHistoryButtons: View {
                         .id("trailing")
                 }
             }
-            .onChange(of: piecesManager.moveRecorder.mainBranchMovesString) { _ in
+            .onChange(of: gameManager.moveRecorder.mainBranchMovesString) { _ in
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                     withAnimation() {
                         scrollProxy.scrollTo("trailing", anchor: .trailing)
@@ -61,7 +61,7 @@ struct MainBranchHistoryButtons: View {
     }
     
     private func getMoveButtonModels() -> [MovesButtonModel] {
-        piecesManager.moveRecorder.mainBranchRoundsArray.enumerated().map { index, move in
+        gameManager.moveRecorder.mainBranchRoundsArray.enumerated().map { index, move in
             MovesButtonModel(id: index, move: move)
         }
     }
@@ -69,6 +69,15 @@ struct MainBranchHistoryButtons: View {
 
 struct MainBranchHistoryButtons_Previews: PreviewProvider {
     static var previews: some View {
-        MainBranchHistoryButtons(piecesManager: PiecesManager())
+        let gameManager = GameManager(
+            gameBuilder: InitialGameBuilder(
+                gameMode: .pvp, historyControlMode: .playStrict
+            )
+        )
+        if let gameManager = gameManager {
+            MainBranchHistoryButtons(gameManager: gameManager)
+        } else {
+            Text("gameBuilder 配置有误")
+        }
     }
 }

@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct PiecesLayer: View {
-    @ObservedObject var piecesManager: PiecesManager
+    @ObservedObject var gameManager: GameManager
     var onReversedBoard: Bool = false
     
     private var isPiecesLegal: Bool {
-        piecesManager.pieces.count == 8 && piecesManager.pieces.allSatisfy({ $0.count <= 8 })
+        gameManager.pieces.count == 8 && gameManager.pieces.allSatisfy({ $0.count <= 8 })
     }
     
     private func movePiece(from originIndex: BoardIndex, to targetIndex: BoardIndex) {
-        guard let targetMovement = (piecesManager.selectedPiecePossibleMovements.first {
+        guard let targetMovement = (gameManager.selectedPiecePossibleMovements.first {
             $0.to == targetIndex
         }) else { return }
         
-        piecesManager.movePiece(
+        gameManager.movePiece(
             from: originIndex,
             to: targetMovement.to
         )
@@ -32,26 +32,26 @@ struct PiecesLayer: View {
                 .aspectRatio(1, contentMode: .fit)
                 .padding(5)
                 .rotationEffect(onReversedBoard ? .degrees(180) : .degrees(0))
-                .alert("升变！", isPresented: $piecesManager.showPromotionAlert) {
+                .alert("升变！", isPresented: $gameManager.showPromotionAlert) {
                     Button("车", role: .none) {
-                        guard let promotionSide = piecesManager.promotionSide else { return }
-                        piecesManager.promotion(to: .r(promotionSide))
+                        guard let promotionSide = gameManager.promotionSide else { return }
+                        gameManager.promotion(to: .r(promotionSide))
                     }
-                    if piecesManager.canPromoteToKnight {
+                    if gameManager.canPromoteToKnight {
                         Button("马", role: .none) {
-                            guard let promotionSide = piecesManager.promotionSide else { return }
-                            piecesManager.promotion(to: .n(promotionSide))
+                            guard let promotionSide = gameManager.promotionSide else { return }
+                            gameManager.promotion(to: .n(promotionSide))
                         }
                     }
-                    if piecesManager.canPromoteToBishop {
+                    if gameManager.canPromoteToBishop {
                         Button("象", role: .none) {
-                            guard let promotionSide = piecesManager.promotionSide else { return }
-                            piecesManager.promotion(to: .b(promotionSide))
+                            guard let promotionSide = gameManager.promotionSide else { return }
+                            gameManager.promotion(to: .b(promotionSide))
                         }
                     }
                     Button("后", role: .none) {
-                        guard let promotionSide = piecesManager.promotionSide else { return }
-                        piecesManager.promotion(to: .q(promotionSide))
+                        guard let promotionSide = gameManager.promotionSide else { return }
+                        gameManager.promotion(to: .q(promotionSide))
                     }
                 }
         } else {
@@ -65,26 +65,30 @@ struct PiecesLayer: View {
             let columns = [GridItem(.adaptive(minimum: size), spacing: 0)]
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(
-                    piecesManager.pieces.flatMap { $0 },
+                    gameManager.pieces.flatMap { $0 },
                     id: \.id
                 ) { model in
-                    let index = piecesManager.pieces.flatMap { $0 }.firstIndex { $0.id == model.id }
+                    let index = gameManager.pieces.flatMap { $0 }.firstIndex { $0.id == model.id }
                     if let index = index {
                         let x = index % 8
                         let y = 7 - index / 8
                         let position = BoardIndex(x: x, y: y)
-                        let pieceItem = piecesManager.getPiece(at: position)
-                        let isPossibleMove = piecesManager.selectedPiecePossibleMovements.contains { $0.to == position }
+                        let pieceItem = gameManager.getPiece(at: position)
+                        let isPossibleMove = gameManager.selectedPiecePossibleMovements.contains { $0.to == position }
                         EquatableView(
                             content: PieceCell(
                                 pieceItem: pieceItem,
                                 isPossibleMove: isPossibleMove,
                                 position: position
                             ) {
-                                guard piecesManager.currentSide == pieceItem.side else { return }
-                                piecesManager.selectedPieceIndex = position
+                                guard gameManager.currentSide == pieceItem.side else { return }
+                                if gameManager.isReviewingHistory
+                                    && gameManager.gameBuilder.historyControlMode == .playStrict {
+                                    return
+                                }
+                                gameManager.selectedPieceIndex = position
                             } onMoveIndicatorTapped: {
-                                guard let selectedPieceIndex = piecesManager.selectedPieceIndex else { return }
+                                guard let selectedPieceIndex = gameManager.selectedPieceIndex else { return }
                                 movePiece(from: selectedPieceIndex, to: position)
                             }
                         )
@@ -111,7 +115,16 @@ struct PiecesLayer_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             Board()
-            PiecesLayer(piecesManager: PiecesManager())
+            let gameManager = GameManager(
+                gameBuilder: InitialGameBuilder(
+                    gameMode: .pvp, historyControlMode: .playStrict
+                )
+            )
+            if let gameManager = gameManager {
+                PiecesLayer(gameManager: gameManager)
+            } else {
+                Text("gameBuilder 配置有误")
+            }
         }.padding()
     }
 }
