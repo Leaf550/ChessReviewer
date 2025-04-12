@@ -314,6 +314,7 @@ extension GameManager {
         toggleCheckStatus(for: currentSide)
         
         moveRecorder.currentMove?.promotion = piece
+        moveRecorder.currentMove?.currentPiecesLayout[7 - promotionPosition.yIndex][promotionPosition.xIndex] = PieceViewModel(piece)
         
         self.promotionPosition = nil
         promotionSide = nil
