@@ -157,6 +157,15 @@ class GameManager: ObservableObject {
         
         impossibleToCheckmate = GameStateEvaluator.isImpossibleToCheckmate(in: self.pieces)
         
+        moveRecorder.initialPosition = Move(
+            from: BoardIndex.getOriginIndex(),
+            to: BoardIndex.getOriginIndex(),
+            piece: .none,
+            moveRound: 0,
+            gameStatus: gameStatusAfterMove(sideAfterMove: gameBuilder.currentMoveSide, round: 1, turn: 1),
+            fen: FEN.fromInitialGameBuilder(gameBuilder),
+            currentPiecesLayout: gameBuilder.pieces
+        )
     }
 }
 
@@ -264,6 +273,7 @@ extension GameManager {
             from: originIndex,
             to: targetIndex,
             piece: originPiece.item,
+            moveRound: currentRound,
             gameStatus: gameStatusAfterMove(
                 sideAfterMove: currentSide.opponent,
                 round: currentSide == PieceViewItem.PieceSide.white ? currentRound : currentRound + 1,
@@ -272,6 +282,8 @@ extension GameManager {
             fen: nil,
             currentPiecesLayout: pieces
         )
+        
+        print(currentSide == PieceViewItem.PieceSide.white ? currentRound : currentRound + 1)
         
         if moveRecorder.currentMove == nil {
             moveRecorder.currentMove = newMove
@@ -514,38 +526,26 @@ extension GameManager {
 }
 
 extension GameManager {
-    func newGame() {
-        pieces = gameBuilder.pieces
-        currentSide = gameBuilder.currentMoveSide
+    func resetGame() {
+        guard let initialMove = moveRecorder.initialPosition else { return }
+        
+        pieces = initialMove.currentPiecesLayout
+        
+        recoverGameStatus(to: initialMove.gameStatus)
+        
+        isReviewingHistory = false
         
         moveRecorder.timeline = nil
         moveRecorder.currentMove = nil
-        isReviewingHistory = false
-        currentTurn = 1
-        currentRound = 1
-        turnsAfterTakenOrPawnMoved = 0
-        toggleCheckStatus(for: .white)
-        toggleCheckStatus(for: .black)
-        toggleStalemateStatus(for: .white)
-        toggleStalemateStatus(for: .black)
-        threefoldRepetition = false
-        impossibleToCheckmate = GameStateEvaluator.isImpossibleToCheckmate(in: pieces)
-        blackARookMoved = false
-        blackHRookMoved = false
-        blackKingMoved = false
-        whiteARookMoved = false
-        whiteHRookMoved = false
-        whiteKingMoved = false
-        showPromotionAlert = false
-        canPromoteToKnight = true
-        canPromoteToBishop = true
-        promotionSide = nil
-        promotionPosition = nil
-        selectedPieceIndex = nil
     }
     
     func stepBackward() {
-        guard let previousMove = moveRecorder.currentMove?.previous else { return }
+        var previousMove = moveRecorder.currentMove?.previous
+        if previousMove == nil {
+            previousMove = moveRecorder.initialPosition
+        }
+        
+        guard let previousMove = previousMove else { return }
         
         moveRecorder.currentMove = previousMove
         
@@ -559,7 +559,13 @@ extension GameManager {
     }
     
     func stepForward() {
-        guard let nextMove = moveRecorder.currentMove?.next else { return }
+        var nextMove = moveRecorder.currentMove?.next
+        
+        if moveRecorder.currentMove == moveRecorder.initialPosition {
+            nextMove = moveRecorder.timeline
+        }
+        
+        guard let nextMove = nextMove else { return }
         
         moveRecorder.currentMove = nextMove
         

@@ -37,7 +37,7 @@ struct Game: View {
                     Text("打印棋谱")
                 }
                 Button {
-                    gameManager.newGame()
+                    gameManager.resetGame()
                 } label: {
                     Text("重置局面")
                 }

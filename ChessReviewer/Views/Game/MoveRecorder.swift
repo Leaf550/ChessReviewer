@@ -47,22 +47,15 @@ struct FEN {
         roundNumber: Int
     ) -> Self {
         // 棋子布局
-        var piecesPlacement = ""
+        let piecesPlacement = piecesPlacementString(from: gameManager.pieces)
         var enPassantTarget: BoardIndex? = nil
         var foundEnPassantTarget = false
         for (rowIndex, row) in gameManager.pieces.enumerated() {
-            var blankCount = 0
             for (columnIndex, piece) in row.enumerated() {
                 switch piece.item {
                     case .none:
-                        blankCount += 1
+                        break
                     default:
-                        if blankCount != 0 {
-                            piecesPlacement += "\(blankCount)"
-                        }
-                        blankCount = 0
-                        piecesPlacement += piece.item.pieceNotation
-                        
                         if !foundEnPassantTarget {
                             switch piece.item {
                                 case .p(_):
@@ -73,12 +66,6 @@ struct FEN {
                             }
                         }
                 }
-            }
-            if blankCount != 0 {
-                piecesPlacement += "\(blankCount)"
-            }
-            if rowIndex != 7 {
-                piecesPlacement += "/"
             }
         }
         
@@ -120,6 +107,31 @@ struct FEN {
         )
     }
     
+    static func fromInitialGameBuilder(_ builder: InitialGameBuilder) -> Self {
+        var castlingAvailability: [CastalingAvailability] = []
+        if builder.canWhiteShortCastling {
+            castlingAvailability.append(.K)
+        }
+        if builder.canWhiteLongCastling {
+            castlingAvailability.append(.Q)
+        }
+        if builder.canBlackShortCastling {
+            castlingAvailability.append(.k)
+        }
+        if builder.canBlackLongCastling {
+            castlingAvailability.append(.q)
+        }
+        
+        return FEN(
+            piecePlacement: piecesPlacementString(from: builder.pieces),
+            activeSide: builder.currentMoveSide,
+            castlingAvailability: castlingAvailability,
+            enPassantTarget: builder.enPassantTarget,
+            halfmoveClock: 0,
+            roundNumber: 1
+        )
+    }
+    
     func toString() -> String {
         return ""
         + "\(piecePlacement) "
@@ -137,15 +149,45 @@ struct FEN {
         + "\(castlingAvailability.map { $0.rawValue }.joined()) "
         + "\(enPassantTarget?.toPositionStr() ?? "-")"
     }
+    
+    private static func piecesPlacementString(from pieces: [[PieceViewModel]]) -> String {
+        var piecesPlacement = ""
+        
+        for (rowIndex, row) in pieces.enumerated() {
+            var blankCount = 0
+            for piece in row {
+                switch piece.item {
+                    case .none:
+                        blankCount += 1
+                    default:
+                        if blankCount != 0 {
+                            piecesPlacement += "\(blankCount)"
+                        }
+                        blankCount = 0
+                        piecesPlacement += piece.item.pieceNotation
+                }
+            }
+            if blankCount != 0 {
+                piecesPlacement += "\(blankCount)"
+            }
+            if rowIndex != 7 {
+                piecesPlacement += "/"
+            }
+        }
+        
+        return piecesPlacement
+    }
 }
 
-class Move {
+class Move: Equatable {
+    var id = UUID()
     var next: Move?
     weak var previous: Move?
     var branches: [Move]?
     var origin: BoardIndex
     var target: BoardIndex
     var piece: PieceViewItem
+    var moveRound: Int
     var promotion: PieceViewItem?
     var gameStatus: GameStatus
     var fen: FEN?
@@ -157,6 +199,7 @@ class Move {
         from origin: BoardIndex,
         to target: BoardIndex,
         piece: PieceViewItem,
+        moveRound: Int,
         gameStatus: GameStatus,
         fen: FEN?,
         currentPiecesLayout: [[PieceViewModel]]
@@ -166,24 +209,38 @@ class Move {
         self.origin = origin
         self.target = target
         self.piece = piece
+        self.moveRound = moveRound
         self.gameStatus = gameStatus
         self.fen = fen
         self.currentPiecesLayout = currentPiecesLayout
+    }
+    
+    static func == (lhs: Move, rhs: Move) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
 class MoveRecorder: ObservableObject {
     @Published var timeline: Move?
     var currentMove: Move?
+    var initialPosition: Move?
+    
+    var currentBranchLatestMove: Move? {
+        var ptr = currentMove == initialPosition ? timeline : currentMove
+        while ptr?.next != nil {
+            ptr = ptr?.next
+        }
+        return ptr
+    }
     
     var mainBranchRoundsArray: [String] {
         var res: [String] = []
-        var ptr = currentMove
+        var ptr = currentBranchLatestMove
         
-        var lastRound = ptr?.gameStatus.currentRound
+        var lastRound = ptr?.moveRound
         var movesInRound: [String] = []
         while ptr != nil {
-            let currentRound = ptr?.gameStatus.currentRound
+            let currentRound = ptr?.moveRound
             
             if currentRound != lastRound {
                 res.append(movesInRound.joined(separator: " "))

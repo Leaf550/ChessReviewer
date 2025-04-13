@@ -52,7 +52,7 @@ struct MainBranchHistoryButtons: View {
                             .padding([.leading, .trailing], 5)
                             .padding([.top, .bottom], 3)
                             .foregroundColor(.primary)
-                            .background(Color.gray.opacity(0.2))
+                            .background(Color.gray.opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
