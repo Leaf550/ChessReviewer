@@ -40,6 +40,10 @@ class UCIEngine {
         engine.send(command: .go(depth: 10))
     }
     
+    func resetGame() {
+        engine.send(command: .ucinewgame)
+    }
+    
     private func convertUCIMoveToBoardIndex(uciMove: String) -> (BoardIndex, BoardIndex)? {
         guard uciMove.count >= 4 else { return nil }
         

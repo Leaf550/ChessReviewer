@@ -549,6 +549,8 @@ extension GameManager {
         
         moveRecorder.timeline = nil
         moveRecorder.currentMove = nil
+        
+        engine?.resetGame()
     }
     
     func stepBackward() {
