@@ -27,6 +27,7 @@ class InitialGameBuilder {
     var historyControlMode: HistoryControlMode
     var pieces: [[PieceViewModel]]
     var currentMoveSide: PieceViewItem.PieceSide
+    var playerSide: PieceViewItem.PieceSide
     var enPassantTarget: BoardIndex?
     var canWhiteShortCastling: Bool
     var canWhiteLongCastling: Bool
@@ -38,6 +39,7 @@ class InitialGameBuilder {
         historyControlMode: HistoryControlMode,
         pieces: [[PieceViewModel]]? = nil,
         currentMoveSide: PieceViewItem.PieceSide? = nil,
+        playerSide: PieceViewItem.PieceSide? = nil,
         enPassantTarget: BoardIndex? = nil,
         canWhiteShortCastling: Bool? = nil,
         canWhiteLongCastling: Bool? = nil,
@@ -48,6 +50,7 @@ class InitialGameBuilder {
         self.historyControlMode = historyControlMode
         self.pieces = pieces ?? InitialGameBuilder.initialGrid()
         self.currentMoveSide = currentMoveSide ?? .white
+        self.playerSide = playerSide ?? .white
         self.enPassantTarget = enPassantTarget
         self.canWhiteShortCastling = canWhiteShortCastling ?? true
         self.canWhiteLongCastling = canWhiteLongCastling ?? true
