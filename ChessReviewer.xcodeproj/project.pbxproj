@@ -31,6 +31,10 @@
 		B78750B82D96A780002316D3 /* PiecesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78750B72D96A780002316D3 /* PiecesLayer.swift */; };
 		B7A174B92D992A64009566E4 /* MoveRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174B82D992A64009566E4 /* MoveRecorder.swift */; };
 		B7A174BB2D99630B009566E4 /* GameStateEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */; };
+		B7BB1A8F2DACD163009BC00B /* ChessKitEngine in Frameworks */ = {isa = PBXBuildFile; productRef = B7BB1A8E2DACD163009BC00B /* ChessKitEngine */; };
+		B7BB1A912DACD26A009BC00B /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BB1A902DACD26A009BC00B /* Engine.swift */; };
+		B7BB1A952DACD97A009BC00B /* nn-37f18f62d772.nnue in Resources */ = {isa = PBXBuildFile; fileRef = B7BB1A942DACD97A009BC00B /* nn-37f18f62d772.nnue */; };
+		B7BB1A972DACE9B7009BC00B /* nn-1111cefa1111.nnue in Resources */ = {isa = PBXBuildFile; fileRef = B7BB1A962DACE9B7009BC00B /* nn-1111cefa1111.nnue */; };
 		B7BC8C612D96E5FC0071E216 /* MovementRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BC8C602D96E5FC0071E216 /* MovementRule.swift */; };
 		B7C69E0B2DAA4B76005BFAA4 /* InitialGameBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C69E0A2DAA4B76005BFAA4 /* InitialGameBuilder.swift */; };
 		B7E249BB2DA1999B00E3791D /* MainBranchHistoryButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */; };
@@ -62,6 +66,9 @@
 		B78750B72D96A780002316D3 /* PiecesLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiecesLayer.swift; sourceTree = "<group>"; };
 		B7A174B82D992A64009566E4 /* MoveRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveRecorder.swift; sourceTree = "<group>"; };
 		B7A174BA2D99630B009566E4 /* GameStateEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStateEvaluator.swift; sourceTree = "<group>"; };
+		B7BB1A902DACD26A009BC00B /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
+		B7BB1A942DACD97A009BC00B /* nn-37f18f62d772.nnue */ = {isa = PBXFileReference; lastKnownFileType = file; path = "nn-37f18f62d772.nnue"; sourceTree = "<group>"; };
+		B7BB1A962DACE9B7009BC00B /* nn-1111cefa1111.nnue */ = {isa = PBXFileReference; lastKnownFileType = file; path = "nn-1111cefa1111.nnue"; sourceTree = "<group>"; };
 		B7BC8C602D96E5FC0071E216 /* MovementRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementRule.swift; sourceTree = "<group>"; };
 		B7C69E0A2DAA4B76005BFAA4 /* InitialGameBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialGameBuilder.swift; sourceTree = "<group>"; };
 		B7E249BA2DA1999B00E3791D /* MainBranchHistoryButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBranchHistoryButtons.swift; sourceTree = "<group>"; };
@@ -72,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7BB1A8F2DACD163009BC00B /* ChessKitEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +140,7 @@
 		B78750A02D95B169002316D3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B7BB1A922DACD962009BC00B /* Engine */,
 				B7A174B52D99295D009566E4 /* Move */,
 				B78750B42D969B29002316D3 /* Game */,
 				B78750AF2D969228002316D3 /* Piece */,
@@ -192,6 +201,24 @@
 			path = Move;
 			sourceTree = "<group>";
 		};
+		B7BB1A922DACD962009BC00B /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				B7BB1A932DACD96F009BC00B /* nnue */,
+				B7BB1A902DACD26A009BC00B /* Engine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		B7BB1A932DACD96F009BC00B /* nnue */ = {
+			isa = PBXGroup;
+			children = (
+				B7BB1A962DACE9B7009BC00B /* nn-1111cefa1111.nnue */,
+				B7BB1A942DACD97A009BC00B /* nn-37f18f62d772.nnue */,
+			);
+			path = nnue;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -236,6 +263,9 @@
 				Base,
 			);
 			mainGroup = B78750862D95B143002316D3;
+			packageReferences = (
+				B7BB1A8D2DACD163009BC00B /* XCRemoteSwiftPackageReference "chesskit-engine" */,
+			);
 			productRefGroup = B78750902D95B143002316D3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -250,7 +280,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7BB1A972DACE9B7009BC00B /* nn-1111cefa1111.nnue in Resources */,
 				B787509A2D95B14A002316D3 /* Preview Assets.xcassets in Resources */,
+				B7BB1A952DACD97A009BC00B /* nn-37f18f62d772.nnue in Resources */,
 				B78750972D95B14A002316D3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -263,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B70604132D97FAC900C0BE2E /* BishopMovementRule.swift in Sources */,
+				B7BB1A912DACD26A009BC00B /* Engine.swift in Sources */,
 				B78750B82D96A780002316D3 /* PiecesLayer.swift in Sources */,
 				B70604152D98223800C0BE2E /* MoveIndicator.swift in Sources */,
 				B78750B12D969239002316D3 /* Piece.swift in Sources */,
@@ -489,6 +522,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B7BB1A8D2DACD163009BC00B /* XCRemoteSwiftPackageReference "chesskit-engine" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/chesskit-app/chesskit-engine.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B7BB1A8E2DACD163009BC00B /* ChessKitEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B7BB1A8D2DACD163009BC00B /* XCRemoteSwiftPackageReference "chesskit-engine" */;
+			productName = ChessKitEngine;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B78750872D95B143002316D3 /* Project object */;
 }

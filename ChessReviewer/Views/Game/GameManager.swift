@@ -20,6 +20,8 @@ struct PieceViewModel: Identifiable {
 class GameManager: ObservableObject {
     var gameBuilder: InitialGameBuilder
     
+    var engine: UCIEngine?
+    
     @Published var moveRecorder: MoveRecorder = MoveRecorder()
     
     @Published var pieces: [[PieceViewModel]]
@@ -137,6 +139,10 @@ class GameManager: ObservableObject {
         self.pieces = gameBuilder.pieces
         self.currentSide = gameBuilder.currentMoveSide
         
+        self.engine = UCIEngine { [weak self] from, to in
+            self?.movePiece(from: from, to: to)
+        }
+        
         self.toggleCheckStatus(for: .white)
         let isWhiteInCheck = sideInCheck == .white
         self.toggleCheckStatus(for: .black)
@@ -180,10 +186,7 @@ extension GameManager {
     
     func movePiece(
         from originIndex: BoardIndex,
-        to targetIndex: BoardIndex,
-        isShortCastaling: Bool = false,
-        isLongCastling: Bool = false,
-        enPassant: Bool = false
+        to targetIndex: BoardIndex
     ) {
         guard !gameOver else { return }
         
@@ -283,8 +286,6 @@ extension GameManager {
             currentPiecesLayout: pieces
         )
         
-        print(currentSide == PieceViewItem.PieceSide.white ? currentRound : currentRound + 1)
-        
         if moveRecorder.currentMove == nil {
             moveRecorder.currentMove = newMove
             moveRecorder.timeline = moveRecorder.currentMove
@@ -317,6 +318,10 @@ extension GameManager {
         
         // is insufficient material
         impossibleToCheckmate = GameStateEvaluator.isImpossibleToCheckmate(in: pieces)
+        
+        if gameBuilder.gameMode == .pve {
+            submitCurrentFENToEngine()
+        }
     }
     
     func promotion(to piece: PieceViewItem) {
@@ -353,6 +358,13 @@ extension GameManager {
         }
         
         return nil
+    }
+    
+    private func submitCurrentFENToEngine() {
+        guard let fen = moveRecorder.currentMove?.fen?.toString() else { return }
+        if currentSide != gameBuilder.playerSide {
+            engine?.submitFENToEngine(fen: fen)
+        }
     }
     
     private func moveIsShortCastaling(

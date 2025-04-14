@@ -34,4 +34,16 @@ struct BoardIndex: Equatable {
     func getXPosition() -> String {
         xIndexStrs[xIndex]
     }
+    
+    static func fromString(indexString: String) -> BoardIndex? {
+        guard indexString.count == 2 else { return nil }
+        
+        let xIndexString = indexString.prefix(1)
+        let yIndexString = indexString.suffix(1)
+        
+        guard let xIndex = (xIndexStrs.firstIndex { $0 == xIndexString }) else { return nil }
+        guard let yIndex = (yIndexStrs.firstIndex { $0 == yIndexString }) else { return nil }
+        
+        return BoardIndex(x: xIndex, y: yIndex)
+    }
 }

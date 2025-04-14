@@ -20,6 +20,8 @@ struct PiecesLayer: View {
             $0.to == targetIndex
         }) else { return }
         
+        print("111123123")
+        
         gameManager.movePiece(
             from: originIndex,
             to: targetMovement.to
@@ -82,6 +84,11 @@ struct PiecesLayer: View {
                                 position: position
                             ) {
                                 guard gameManager.currentSide == pieceItem.side else { return }
+                                
+                                if gameManager.gameBuilder.gameMode == .pve && gameManager.currentSide != gameManager.gameBuilder.playerSide {
+                                    return
+                                }
+                                
                                 if gameManager.isReviewingHistory
                                     && gameManager.gameBuilder.historyControlMode == .playStrict {
                                     return

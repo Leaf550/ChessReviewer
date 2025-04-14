@@ -11,7 +11,7 @@ struct ContentView: View {
     var body: some View {
         let gameManager = GameManager(
             gameBuilder: InitialGameBuilder(
-                gameMode: .pvp, historyControlMode: .playStrict
+                gameMode: .pve, historyControlMode: .playStrict
             )
         )
         if let gameManager = gameManager {
